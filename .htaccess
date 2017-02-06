@@ -1,0 +1,18 @@
+##
+## Modificare il path del percorso del file .htpasswd
+##
+##
+AuthType Basic
+AuthName "Identity Manager API"
+AuthUserFile /var/www/identity.stefano.web/web/.htpasswd
+Require valid-user
+
+RewriteEngine On       
+	RewriteCond $1 !^(index\.php)         
+        RewriteRule ^(.*)$ index.php?/$1 [L]
+
+
+   
+	
+
+        
