@@ -4,6 +4,8 @@ require APPPATH . '/libraries/REST_Controller.php';
 
 use Restserver\Libraries\REST_Controller;
 
+require APPPATH . '/third_party/vendor/autoload.php';
+
 
 /**
  * Api
@@ -24,81 +26,259 @@ class Users extends REST_Controller
   public function index_get($user_id=null)
   {    
     $params=$this->get();   
-        
+   
     // Verifica password
     if(!empty($params) && $user_id==NULL)
-    {      
+    {  
       if(isset($params['where']) && !empty($params['where']))
       {
         $where_string = json_decode($params['where'],TRUE);
-        //die(print('<pre>'.print_r($where_string,TRUE).'</pre>')); 
         
-        // Verifico Username e password
-        if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
+        // é un array json
+        if(json_last_error() == JSON_ERROR_NONE)
         {
-          $email=urldecode($where_string['email']);
-          $password=urldecode($where_string['password']);
-          
-          $data=$this->mongo_db->where(array('email' => $email))->get('users');
-          
-          if(empty($data))
+          if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {
-            $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
-          }
-          else
-          {    
-            // Verifico la password
-            if(isset($data[0]['password']) && !empty($data[0]['password']) && password_verify($password,$data[0]['password']))
-            {              
-              // Converto il campo _id in string
-              $data[0]['_id']=(string)$data[0]['_id'];
-              // Non trasmetto la password
-              unset($data[0]['password']);              
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+            $email=urldecode($where_string['email']);
+            $password=urldecode($where_string['password']);
+          
+            $data=$this->mongo_db->where(array('email' => $email))->get('users');
+   
+            if(empty($data))
+            {
+              $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+              return;
             }
-            else  $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
-          }
-        }
-        
-        // Verifico Username
-        if(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))
-        {
-          $email=urldecode($where_string['email']);   
+            else
+            {    
+              // Verifico la password
+              if(isset($data[0]['password']) && !empty($data[0]['password']))
+              {
+                $context = new PHPassLib\Application\Context;
+                $context->addConfig('bcrypt', array ('rounds' => 8));
+                
+                if($context->verify($password, $data[0]['password'])) 
+                {
+                  // Converto il campo _id in string
+                  $data[0]['_id']=(string)$data[0]['_id'];
+                  // Non trasmetto la password
+                  unset($data[0]['password']);              
+                  $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                  return;
+                }
+                else
+                {                  
+                  // Hack SB PASSWORD                                    
+                  // Se la password è già stata resettata -> ERRORE
+                  if(isset($data[0]['resetpwd']) && $data[0]['resetpwd']==1) 
+                  {
+                    $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                    return;
+                  }
+                  else
+                  {
+                    // Resetto la password
+                    $context = new PHPassLib\Application\Context;
+                    $context->addConfig('bcrypt', array ('rounds' => 8)); 
+                    // Hash a password                
+                    $passwordhash=$context->hash($password);                    
+                    $this->mongo_db->where(array('_id' => new MongoId((string)$data[0]['_id'])))->set(array('password' => $passwordhash, 'resetpwd' => 1))->update('users');    
+                    
+                    // Converto il campo _id in string
+                    $data[0]['_id']=(string)$data[0]['_id'];
+                    // Non trasmetto la password
+                    unset($data[0]['password']);              
+                    $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                    return;
+                  }                  
+                }
+              }
+              else  
+              {
+                $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                return;
+              }
+            }
+          }        
+                  // Verifico Username
+          if(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))
+          {
+            $email=urldecode($where_string['email']);   
   
-          $data=$this->mongo_db->where(array('email' => $email))->get('users');
+            $data=$this->mongo_db->where(array('email' => $email))->get('users');
           
-          if(empty($data))
+            if(empty($data))
+            {
+             $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+             return;
+            }
+            else
+            {            
+              if(isset($data[0]['password'])) unset($data[0]['password']);
+              if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;
+            }
+          }      
+        
+          // Verifico Nickname
+          if(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname']))
           {
-            $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
-          }
-          else
-          {            
-            if(isset($data[0]['password'])) unset($data[0]['password']);
-            if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-            $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-          }
-        }      
-        
-        
-        // Verifico Nickname
-        if(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname']))
-        {
-          $nickname=urldecode($where_string['nickname']);
+            $nickname=urldecode($where_string['nickname']);
            
-          $data=$this->mongo_db->where(array('nickname' => $nickname))->get('users');
+            $data=$this->mongo_db->where(array('nickname' => $nickname))->get('users');
           
-          if(empty($data))
-          {
-            $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+            if(empty($data))
+            {
+              $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+              return;
+            }
+            else
+            {                
+              // Converto il campo _id in string            
+              $data[0]['_id']=(string)$data[0]['_id'];
+              $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK); 
+              return;
+            }          
           }
-          else
-          {                
-            // Converto il campo _id in string            
-            $data[0]['_id']=(string)$data[0]['_id'];
-            $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK);      
-          }          
+          $this->response(array('response' => 'ERR', 'message' => 'Errore Generico'), REST_Controller::HTTP_OK);
+          return;         
         }
+        else
+        {         
+          // Remove Refuso modulo Python char \x22
+          if(is_string($params['where']))
+          {
+            $params['where'] = str_replace('\x22', '', $params['where']);
+          }
+          
+          $data=explode(",", $params['where']); 
+          
+          if(count($data)==2 && isset($data[0]) && isset($data[1]) && !empty($data[0]) && !empty($data[1]))
+          {
+            $data[0]=str_replace('{', '', $data[0]);
+            $data[0]=str_replace('}', '', $data[0]);
+            $data[1]=str_replace('{', '', $data[1]);
+            $data[1]=str_replace('}', '', $data[1]);
+            
+            $credentials_email=  explode(":", $data[0]);
+            $credentials_password= explode(":", $data[1]);
+            
+            if(isset($credentials_email[0]) && $credentials_email[0]=='email' && isset($credentials_email[1]) && !empty($credentials_email[1])
+               && isset($credentials_password[0]) && $credentials_password[0]=='password' && isset($credentials_password[1]) && !empty($credentials_password[1]))
+            {
+              $email=urldecode($credentials_email[1]);
+              $password=urldecode($credentials_password[1]);      
+              
+              $data=$this->mongo_db->where(array('email' => $email))->get('users');          
+              
+              if(empty($data))
+              {
+                $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+              }
+              else
+              {                    
+                // Verifico la password
+               
+                if(isset($data[0]['password']) && !empty($data[0]['password']))
+                {                  
+                  $context = new PHPassLib\Application\Context;
+                  $context->addConfig('bcrypt', array ('rounds' => 8));
+
+                  if($context->verify($password, $data[0]['password'])) 
+                  {
+                    // Converto il campo _id in string
+                    $data[0]['_id']=(string)$data[0]['_id'];
+                    // Non trasmetto la password
+                    unset($data[0]['password']);              
+                    $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                    return;
+                  }
+                  else
+                  {                   
+                    // Hack SB PASSWORD                                    
+                    // Se la password è già stata resettata -> ERRORE
+                    
+                    if(isset($data[0]['resetpwd']) && $data[0]['resetpwd']==1) 
+                    {
+                      $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                      return;
+                    }
+                    else
+                    {
+                      // Resetto la password
+                      $context = new PHPassLib\Application\Context;
+                      $context->addConfig('bcrypt', array ('rounds' => 8)); 
+                      // Hash a password                
+                      $passwordhash=$context->hash($password);                    
+                      $this->mongo_db->where(array('_id' => new MongoId((string)$data[0]['_id'])))->set(array('password' => $passwordhash, 'resetpwd' => 1))->update('users');    
+                    
+                      // Converto il campo _id in string
+                      $data[0]['_id']=(string)$data[0]['_id'];
+                      // Non trasmetto la password
+                      unset($data[0]['password']);              
+                      $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                      return;
+                    } 
+                  }                  
+                }
+                else
+                {
+                  $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                  return;
+                }
+              }
+            }
+            else
+            {
+              $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);          
+              return;
+            }
+          }
+          
+          if(count($data)==1 && isset($data[0]) && !empty($data[0]))
+          {
+            $data[0]=str_replace('{', '', $data[0]);
+            $data[0]=str_replace('}', '', $data[0]);
+            
+            $credentials_email=  explode(":", $data[0]);
+            
+            if(isset($credentials_email[0]) && $credentials_email[0]=='email' && isset($credentials_email[1]) && !empty($credentials_email[1]))
+            {
+              $email=urldecode($credentials_email[1]);              
+  
+              $data=$this->mongo_db->where(array('email' => $email))->get('users');          
+              if(empty($data))
+              {
+                $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+                return;
+              }
+              else
+              {             
+                if(isset($data[0]['password'])) unset($data[0]['password']);
+                if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
+                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                return;
+              }
+            }
+            else
+            {
+              $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+              return;
+            }
+              
+          }
+          
+          if(empty($count))
+          {
+            $this->response(array('response' => 'ERR', 'message' => 'Errore generico.'), REST_Controller::HTTP_OK); 
+            return;
+          }
+        }        
+        
+
       }
+      else $this->response(array('response' => 'ERR', 'message' => 'Errore generico'), REST_Controller::HTTP_OK);
     }
     else // Ottengo i dati dell'utente
     {
@@ -127,7 +307,7 @@ class Users extends REST_Controller
         $response_arr=$data[0];
         $this->response($response_arr, REST_Controller::HTTP_OK);
       }     
-    }
+    }    
   }
  
   public function index_patch($user_id=null)
@@ -149,7 +329,14 @@ class Users extends REST_Controller
     if(isset($patch_data['status']) && !empty($patch_data['status'])) $data['status']=$patch_data['status'];
     if(isset($patch_data['biography']) && !empty($patch_data['biography'])) $data['biography']=$patch_data['biography'];
 
-    if(isset($patch_data['password']) && !empty($patch_data['password'])) $data['password']=password_hash($patch_data['password'], PASSWORD_BCRYPT);
+    if(isset($patch_data['password']) && !empty($patch_data['password']))
+    {
+      $context = new PHPassLib\Application\Context;
+      $context->addConfig('bcrypt', array ('rounds' => 8)); 
+      // Hash a password                
+      $data['password']=$context->hash($patch_data['password']);
+    }  
+     
     
     if(!empty($data))
     {
@@ -222,7 +409,13 @@ class Users extends REST_Controller
       $data['_updated']=$time;
       $data['_created']=$time;
       
-      if(isset($post_data['password']) && !empty($post_data['password'])) $data['password']=password_hash(urldecode ($post_data['password']), PASSWORD_BCRYPT);
+      if(isset($post_data['password']) && !empty($post_data['password']))
+      {
+        $context = new PHPassLib\Application\Context;
+        $context->addConfig('bcrypt', array ('rounds' => 8)); 
+        // Hash a password                
+        $data['password']=$context->hash($post_data['password']);
+      }
       
       $this->mongo_db->insert('users', $data);
       
