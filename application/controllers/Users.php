@@ -73,7 +73,7 @@ class Users extends REST_Controller
                   // Se la password è già stata resettata -> ERRORE
                   if(isset($data[0]['resetpwd']) && $data[0]['resetpwd']==1) 
                   {
-                    $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                    $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                     return;
                   }
                   else
@@ -96,7 +96,7 @@ class Users extends REST_Controller
               }
               else  
               {
-                $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                 return;
               }
             }
@@ -201,7 +201,7 @@ class Users extends REST_Controller
                     
                     if(isset($data[0]['resetpwd']) && $data[0]['resetpwd']==1) 
                     {
-                      $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                      $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                       return;
                     }
                     else
@@ -224,7 +224,7 @@ class Users extends REST_Controller
                 }
                 else
                 {
-                  $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
+                  $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                   return;
                 }
               }
@@ -408,6 +408,8 @@ class Users extends REST_Controller
       $time=new MongoDate();
       $data['_updated']=$time;
       $data['_created']=$time;
+      
+      $data['resetpwd'] = 1;
       
       if(isset($post_data['password']) && !empty($post_data['password']))
       {
