@@ -339,7 +339,7 @@ class Users extends REST_Controller
     if(!empty($data))
     {
       date_default_timezone_set("Europe/Rome"); 
-      $data['_updated']= time();    
+      $data['_updated']= new MongoDate();  
       $this->mongo_db->where(array('_id' => new MongoId($user_id)))->set($data)->update('users');    
       $this->response(array('_status' => 'OK'), REST_Controller::HTTP_OK);    
     }
