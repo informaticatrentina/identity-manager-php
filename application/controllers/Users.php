@@ -389,9 +389,11 @@ class Users extends REST_Controller
     else
     {
       if(isset($post_data['email']) && !empty($post_data['email'])) $data['email']=trim(urldecode($post_data['email']));
-      if(isset($post_data['registration-type']) && !empty($post_data['registration-type'])) $data['registration-type']=$post_data['registration-type'];
+      if(isset($post_data['type']) && !empty($post_data['type'])) $data['type']=$post_data['type'];
+      if(isset($post_data['source']) && !empty($post_data['source'])) $data['source']=$post_data['source'];
+      if(isset($post_data['status']) && !empty($post_data['status'])) $data['status']=$post_data['status'];
       
-      if($data['registration-type']=='org')
+      if($post_data['type']=='org')
       {
         if(isset($post_data['firstname']) && !empty($post_data['firstname'])) $data['firstname']=trim(urldecode($post_data['firstname']));
         if(isset($post_data['lastname']) && !empty($post_data['lastname'])) $data['lastname']='';
@@ -403,7 +405,7 @@ class Users extends REST_Controller
       }
       
       date_default_timezone_set("Europe/Rome"); 
-      $time=time();
+      $time=new MongoDate();
       $data['_updated']=$time;
       $data['_created']=$time;
       
@@ -413,9 +415,7 @@ class Users extends REST_Controller
         $context->addConfig('bcrypt', array ('rounds' => 8)); 
         // Hash a password                
         $data['password']=$context->hash($post_data['password']);
-      }
-      
-      $data['status']=0;
+      }      
       
       $this->mongo_db->insert('users', $data);
       
