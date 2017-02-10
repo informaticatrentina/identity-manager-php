@@ -415,6 +415,8 @@ class Users extends REST_Controller
         $data['password']=$context->hash($post_data['password']);
       }
       
+      $data['status']=0;
+      
       $this->mongo_db->insert('users', $data);
       
       $data=$this->mongo_db->select(array('_id'))->where(array('email' => trim(urldecode($post_data['email']))))->get('users');     
