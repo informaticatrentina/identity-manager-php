@@ -46,7 +46,7 @@ class Users extends REST_Controller
    
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
               return;
             }
             else
@@ -109,7 +109,7 @@ class Users extends REST_Controller
           
             if(empty($data))
             {
-             $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+             $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
              return;
             }
             else
@@ -130,7 +130,7 @@ class Users extends REST_Controller
           
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
               return;
             }
             else
@@ -141,7 +141,7 @@ class Users extends REST_Controller
               return;
             }          
           }
-          $this->response(array('response' => 'ERR', 'message' => 'Errore Generico'), REST_Controller::HTTP_OK);
+          $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
           return;         
         }
         else
@@ -174,7 +174,7 @@ class Users extends REST_Controller
               
               if(empty($data))
               {
-                $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
               }
               else
               {                    
@@ -250,7 +250,7 @@ class Users extends REST_Controller
               $data=$this->mongo_db->where(array('email' => $email))->get('users');          
               if(empty($data))
               {
-                $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                 return;
               }
               else
@@ -271,14 +271,12 @@ class Users extends REST_Controller
           
           if(empty($count))
           {
-            $this->response(array('response' => 'ERR', 'message' => 'Errore generico.'), REST_Controller::HTTP_OK); 
+            $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK); 
             return;
           }
-        }        
-        
-
+        }
       }
-      else $this->response(array('response' => 'ERR', 'message' => 'Errore generico'), REST_Controller::HTTP_OK);
+      else $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
     }
     else // Ottengo i dati dell'utente
     {
@@ -295,7 +293,7 @@ class Users extends REST_Controller
       $data=$this->mongo_db->where(array('_id' => $mongo_user_id))->get('users');
       if(empty($data))
       {
-        $this->response(array('response' => 'ERR', 'message' => 'Utente non valido.'), REST_Controller::HTTP_OK);
+        $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
         return;
       }
       else
