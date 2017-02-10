@@ -34,7 +34,8 @@ class Users extends REST_Controller
       {
         $where_string = json_decode($params['where'],TRUE);
         
-        // é un array json
+        // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Damn!
+        // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
         {
           if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
@@ -50,7 +51,7 @@ class Users extends REST_Controller
               return;
             }
             else
-            {    
+            {              
               // Verifico la password
               if(isset($data[0]['password']) && !empty($data[0]['password']))
               {
@@ -177,9 +178,8 @@ class Users extends REST_Controller
                 $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
               }
               else
-              {                    
-                // Verifico la password
-               
+              {                
+                // Verifico la password               
                 if(isset($data[0]['password']) && !empty($data[0]['password']))
                 {                  
                   $context = new PHPassLib\Application\Context;
