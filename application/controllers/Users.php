@@ -251,7 +251,7 @@ class Users extends REST_Controller
               $email=urldecode($credentials_email[1]);   
               
               // Hack  Io Sostengo - Elimino il SOURCE DAL LOGIN email$$SOURCE
-              $email = substr($email, 0, strpos($email, "$$"));
+              //$email = substr($email, 0, strpos($email, "$$"));
   
               $data=$this->mongo_db->where(array('email' => $email))->get('users');          
               if(empty($data))
