@@ -240,12 +240,18 @@ class Users extends REST_Controller
           {
             $data[0]=str_replace('{', '', $data[0]);
             $data[0]=str_replace('}', '', $data[0]);
+            $data[0]=str_replace('[', '', $data[0]);
+            $data[0]=str_replace(']', '', $data[0]);
+            $data[0]=str_replace('$or:', '', $data[0]);
             
             $credentials_email=  explode(":", $data[0]);
             
             if(isset($credentials_email[0]) && $credentials_email[0]=='email' && isset($credentials_email[1]) && !empty($credentials_email[1]))
             {
-              $email=urldecode($credentials_email[1]);              
+              $email=urldecode($credentials_email[1]);   
+              
+              // Hack  Io Sostengo - Elimino il SOURCE DAL LOGIN email$$SOURCE
+              $email = substr($email, 0, strpos($email, "$$"));
   
               $data=$this->mongo_db->where(array('email' => $email))->get('users');          
               if(empty($data))
