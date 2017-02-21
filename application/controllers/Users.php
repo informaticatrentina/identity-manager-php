@@ -263,7 +263,7 @@ class Users extends REST_Controller
               {             
                 if(isset($data[0]['password'])) unset($data[0]['password']);
                 if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                $this->response(array('_items' => $data, 'data' => $data), REST_Controller::HTTP_OK);
                 return;
               }
             }
