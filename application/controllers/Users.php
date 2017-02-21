@@ -429,7 +429,8 @@ class Users extends REST_Controller
       
       if(isset($data[0]['_id']) && !empty($data[0]['_id']))
       {
-        $this->response(array('_status' => 'OK', '_id' => (string)$data[0]['_id']), REST_Controller::HTTP_OK);
+        //$this->response(array('_status' => 'OK', '_id' => (string)$data[0]['_id']), REST_Controller::HTTP_OK);
+        $this->response(array('_status' => 'OK', '_id' => $post_data), REST_Controller::HTTP_OK);
       }
       else
       {
