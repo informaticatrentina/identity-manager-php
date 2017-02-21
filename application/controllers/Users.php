@@ -321,13 +321,29 @@ class Users extends REST_Controller
     if(isset($patch_data['firstname']) && !empty($patch_data['firstname'])) $data['firstname']=$patch_data['firstname'];
     if(isset($patch_data['lastname']) && !empty($patch_data['lastname'])) $data['lastname']=$patch_data['lastname'];
     if(isset($patch_data['nickname']) && !empty($patch_data['nickname'])) $data['nickname']=$patch_data['nickname'];
-    if(isset($patch_data['sex']) && !empty($patch_data['sex'])) $data['sex']=$patch_data['sex'];
+    if(isset($patch_data['sex']) && !empty($patch_data['sex'])) $data['sex']=strtoupper((string)$patch_data['sex']);
     if(isset($patch_data['location']) && !empty($patch_data['location'])) $data['location']=$patch_data['location'];
     if(isset($patch_data['website']) && !empty($patch_data['website'])) $data['website']=$patch_data['website'];
-    if(isset($patch_data['status']) && !empty($patch_data['status'])) $data['status']=$patch_data['status'];
-    if(isset($patch_data['mobile']) && !empty($patch_data['mobile'])) $data['mobile']=$patch_data['mobile'];
-    if(isset($patch_data['profile-info']['citizenship']) && !empty($patch_data['profile-info']['citizenship'])) $data['citizenship']=$patch_data['profile-info']['citizenship'];
-    if(isset($patch_data['biography']) && !empty($patch_data['biography'])) $data['biography']=$patch_data['biography'];
+    if(isset($patch_data['status']) && !empty($patch_data['status'])) $data['status']=$patch_data['status'];    
+    if(isset($patch_data['biography']) && !empty($patch_data['biography'])) $data['biography']=$patch_data['biography'];    
+    
+    if(isset($patch_data['profile-info']) && !empty($patch_data['profile-info']))
+    {
+      $profile_info=json_decode($patch_data['profile-info'],TRUE);
+      if(isset($profile_info['citizenship']) && !empty($profile_info['citizenship'])) $data['citizenship']=(string) $profile_info['citizenship'];
+      if(isset($profile_info['education_level']) && !empty($profile_info['education_level'])) $data['education-level']=(string) $profile_info['education_level'];
+      if(isset($profile_info['dob']) && !empty($profile_info['dob']))
+      {
+        $datenow = new DateTime("now", new DateTimeZone('Europe/Rome'));
+        $datebirthday = new DateTime("now", new DateTimeZone('Europe/Rome'));
+        $datebirthday->setTimestamp($profile_info['dob']);
+        $interval = $datebirthday->diff($datenow);          
+        $data['age']=(string) $interval->y;
+      }
+      if(isset($profile_info['residence']) && !empty($profile_info['residence'])) $data['location']=(string) $profile_info['residence'];
+      if(isset($profile_info['attended_class']) && !empty($profile_info['attended_class'])) $data['attended-class']=(string) $profile_info['attended_class'];
+      if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex']=strtoupper((string) $profile_info['gender']);
+    }
 
     if(isset($patch_data['password']) && !empty($patch_data['password']))
     {
@@ -411,7 +427,7 @@ class Users extends REST_Controller
         }
         if(isset($profile_info['residence']) && !empty($profile_info['residence'])) $data['location']=(string) $profile_info['residence'];
         if(isset($profile_info['attended_class']) && !empty($profile_info['attended_class'])) $data['attended-class']=(string) $profile_info['attended_class'];
-        if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex'][]=(string) $profile_info['gender'];
+        if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex']=strtoupper((string) $profile_info['gender']);
       }
       
       
@@ -447,8 +463,7 @@ class Users extends REST_Controller
       
       if(isset($data[0]['_id']) && !empty($data[0]['_id']))
       {
-        //$this->response(array('_status' => 'OK', '_id' => (string)$data[0]['_id']), REST_Controller::HTTP_OK);
-        $this->response(array('_status' => 'OK', '_id' => $post_data), REST_Controller::HTTP_OK);
+        $this->response(array('_status' => 'OK', '_id' => (string)$data[0]['_id']), REST_Controller::HTTP_OK);        
       }
       else
       {
