@@ -395,7 +395,15 @@ class Users extends REST_Controller
       if(isset($post_data['source']) && !empty($post_data['source'])) $data['source']=$post_data['source'];
       if(isset($post_data['status'])) $data['status']=(string) $post_data['status'];
       if(isset($post_data['mobile']) && !empty($post_data['mobile'])) $data['mobile']=$post_data['mobile'];
-      if(isset($post_data['profile-info']['citizenship']) && !empty($post_data['profile-info']['citizenship'])) $data['citizenship']=$post_data['profile-info']['citizenship'];
+      
+      if(isset($post_data['profile-info']) && !empty($post_data['profile-info']))
+      {
+        $profile_info=json_decode($post_data['profile-info'],TRUE);
+        if(isset($profile_info['citizenship']) && !empty($profile_info['citizenship'])) $data['citizenship']=(string) $profile_info['citizenship'];
+        if(isset($profile_info['education_level']) && !empty($profile_info['education_level'])) $data['education-level']=(string) $profile_info['education_level'];
+        if(isset($profile_info['age']) && !empty($profile_info['age'])) $data['age']=(string) $profile_info['age'];
+      }
+      
       
       if($post_data['type']=='org')
       {
