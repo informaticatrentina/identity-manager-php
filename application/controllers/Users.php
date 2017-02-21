@@ -402,6 +402,8 @@ class Users extends REST_Controller
         if(isset($profile_info['citizenship']) && !empty($profile_info['citizenship'])) $data['citizenship']=(string) $profile_info['citizenship'];
         if(isset($profile_info['education_level']) && !empty($profile_info['education_level'])) $data['education-level']=(string) $profile_info['education_level'];
         if(isset($profile_info['age']) && !empty($profile_info['age'])) $data['age']=(string) $profile_info['age'];
+        if(isset($profile_info['association']) && !empty($profile_info['association'])) $data['location']=(string) $profile_info['association'];
+        if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex'][]=(string) $profile_info['gender'];
       }
       
       
