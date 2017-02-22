@@ -44,7 +44,7 @@ class Users extends REST_Controller
                 {
                     if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
                     {
-                        if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']) && filter_var($where_string['$or'][0]['email'], FILTER_VALIDATE_EMAIL))
+                        if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
                         {
                           $this->_checkEmail($where_string['$or'][0]['email']);
                         }
