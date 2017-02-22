@@ -332,24 +332,9 @@ class Users extends REST_Controller
     if(isset($patch_data['website']) && !empty($patch_data['website'])) $data['website']=$patch_data['website'];
     if(isset($patch_data['status']) && !empty($patch_data['status'])) $data['status']=$patch_data['status'];    
     if(isset($patch_data['biography']) && !empty($patch_data['biography'])) $data['biography']=$patch_data['biography'];    
+    if(isset($patch_data['mobile']) && !empty($patch_data['mobile'])) $data['mobile']=$patch_data['mobile'];    
     
-    if(isset($patch_data['profile-info']) && !empty($patch_data['profile-info']))
-    {
-      $profile_info=json_decode($patch_data['profile-info'],TRUE);
-      if(isset($profile_info['citizenship']) && !empty($profile_info['citizenship'])) $data['citizenship']=(string) $profile_info['citizenship'];
-      if(isset($profile_info['education_level']) && !empty($profile_info['education_level'])) $data['education-level']=(string) $profile_info['education_level'];
-      if(isset($profile_info['dob']) && !empty($profile_info['dob']))
-      {
-        $datenow = new DateTime("now", new DateTimeZone('Europe/Rome'));
-        $datebirthday = new DateTime("now", new DateTimeZone('Europe/Rome'));
-        $datebirthday->setTimestamp($profile_info['dob']);
-        $interval = $datebirthday->diff($datenow);          
-        $data['age']=(string) $interval->y;
-      }
-      if(isset($profile_info['residence']) && !empty($profile_info['residence'])) $data['location']=(string) $profile_info['residence'];
-      if(isset($profile_info['attended_class']) && !empty($profile_info['attended_class'])) $data['attended-class']=(string) $profile_info['attended_class'];
-      if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex']=strtoupper((string) $profile_info['gender']);
-    }
+    if(isset($patch_data['profile-info']) && !empty($patch_data['profile-info'])) $data['profile-info']=$patch_data['profile-info'];
 
     if(isset($patch_data['password']) && !empty($patch_data['password']))
     {
@@ -417,25 +402,8 @@ class Users extends REST_Controller
       if(isset($post_data['source']) && !empty($post_data['source'])) $data['source']=$post_data['source'];
       if(isset($post_data['status'])) $data['status']=(string) $post_data['status'];
       if(isset($post_data['mobile']) && !empty($post_data['mobile'])) $data['mobile']=$post_data['mobile'];
-      
-      if(isset($post_data['profile-info']) && !empty($post_data['profile-info']))
-      {
-        $profile_info=json_decode($post_data['profile-info'],TRUE);
-        if(isset($profile_info['citizenship']) && !empty($profile_info['citizenship'])) $data['citizenship']=(string) $profile_info['citizenship'];
-        if(isset($profile_info['education_level']) && !empty($profile_info['education_level'])) $data['education-level']=(string) $profile_info['education_level'];
-        if(isset($profile_info['dob']) && !empty($profile_info['dob']))
-        {
-          $datenow = new DateTime("now", new DateTimeZone('Europe/Rome'));
-          $datebirthday = new DateTime("now", new DateTimeZone('Europe/Rome'));
-          $datebirthday->setTimestamp($profile_info['dob']);
-          $interval = $datebirthday->diff($datenow);          
-          $data['age']=(string) $interval->y;
-        }
-        if(isset($profile_info['residence']) && !empty($profile_info['residence'])) $data['location']=(string) $profile_info['residence'];
-        if(isset($profile_info['attended_class']) && !empty($profile_info['attended_class'])) $data['attended-class']=(string) $profile_info['attended_class'];
-        if(isset($profile_info['gender']) && !empty($profile_info['gender'])) $data['sex']=strtoupper((string) $profile_info['gender']);
-      }
-      
+    
+      if(isset($post_data['profile-info']) && !empty($post_data['profile-info'])) $data['profile-info']=$post_data['profile-info'];
       
       if($post_data['type']=='org')
       {
