@@ -46,7 +46,7 @@ class Users extends REST_Controller
                     {
                         if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
                         {
-                          $this->_checkEmail($where_string['$or'][0]['email']);
+                          return $this->_checkEmail($where_string['$or'][0]['email']);
                         }
                     }
                 }
@@ -262,24 +262,10 @@ class Users extends REST_Controller
             
             if(isset($credentials_email[0]) && $credentials_email[0]=='email' && isset($credentials_email[1]) && !empty($credentials_email[1]))
             {
-              $email=urldecode($credentials_email[1]);   
-              
               // Hack  Io Sostengo - Elimino il SOURCE DAL LOGIN email$$SOURCE
               //$email = substr($email, 0, strpos($email, "$$"));
-  
-              $data=$this->mongo_db->where(array('email' => $email))->get('users');          
-              if(empty($data))
-              {
-                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-                return;
-              }
-              else
-              {             
-                if(isset($data[0]['password'])) unset($data[0]['password']);
-                if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-                $this->response(array('_items' => $data, 'data' => $data), REST_Controller::HTTP_OK);
-                return;
-              }
+              $email=urldecode($credentials_email[1]);                 
+              return $this->_checkEmail($email);             
             }
             else
             {
@@ -468,15 +454,13 @@ class Users extends REST_Controller
           
     if(empty($data))
     {
-      $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-      return;
+      return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);      
     }
     else
     {            
       if(isset($data[0]['password'])) unset($data[0]['password']);
       if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-      $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-      return;
+      return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);      
     }
   }
 }
