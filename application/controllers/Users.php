@@ -37,7 +37,21 @@ class Users extends REST_Controller
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Damn!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {
+        {          
+          if(isset($where_string['$or']))
+          {
+                if(!empty($where_string['$or']))
+                {
+                    if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
+                    {
+                        if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']) && filter_var($where_string['$or'][0]['email'], FILTER_VALIDATE_EMAIL))
+                        {
+                          $this->_checkEmail($where_string['$or'][0]['email']);
+                        }
+                    }
+                }
+          }
+
           if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {
             $email=urldecode($where_string['email']);
@@ -443,6 +457,26 @@ class Users extends REST_Controller
       {
         $this->response(array('_status' => 'ERR', '_issues' => 'Errore durante la creazione dell\'utente'), REST_Controller::HTTP_OK);
       }      
+    }
+  }
+  
+  private function _checkEmail($email)
+  {
+    if(empty($email)) $this->response(array('response' => 'ERR', 'message' => 'Email non valida'), REST_Controller::HTTP_OK);
+    
+    $data=$this->mongo_db->where(array('email' => $email))->get('users');
+          
+    if(empty($data))
+    {
+      $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+      return;
+    }
+    else
+    {            
+      if(isset($data[0]['password'])) unset($data[0]['password']);
+      if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
+      $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+      return;
     }
   }
 }
