@@ -20,7 +20,8 @@ class Users extends REST_Controller
 {
   function __construct()
   {
-    parent::__construct();   
+    parent::__construct();
+    $this->load->helper('security');
   }
   
   public function index_get($user_id=null)
@@ -365,7 +366,7 @@ class Users extends REST_Controller
     
     if(isset($post_data['email']) && !empty($post_data['email']))
     {
-      $email=urldecode($post_data['email']);
+      $email=xss_clean($post_data['email']);
       
       $data=$this->mongo_db->where(array('email' => $email))->get('users');     
           
@@ -380,7 +381,7 @@ class Users extends REST_Controller
     // Verifico Nickname
     if(isset($post_data['nickname']) && !empty($post_data['nickname']))
     {
-      $nickname=urldecode($post_data['nickname']);
+      $nickname=xss_clean($post_data['nickname']);
            
       $data=$this->mongo_db->where(array('nickname' => $nickname))->get('users');
           
@@ -397,23 +398,24 @@ class Users extends REST_Controller
     }
     else
     {
-      if(isset($post_data['email']) && !empty($post_data['email'])) $data['email']=trim(urldecode($post_data['email']));
+      if(isset($post_data['email']) && !empty($post_data['email'])) $data['email']=trim(xss_clean($post_data['email']));
       if(isset($post_data['type']) && !empty($post_data['type'])) $data['type']=$post_data['type'];
       if(isset($post_data['source']) && !empty($post_data['source'])) $data['source']=$post_data['source'];
       if(isset($post_data['status'])) $data['status']=(string) $post_data['status'];
       if(isset($post_data['mobile']) && !empty($post_data['mobile'])) $data['mobile']=$post_data['mobile'];
+      if(isset($post_data['nickname']) && !empty($post_data['nickname'])) $data['nickname']=trim(xss_clean($post_data['nickname']));
     
       if(isset($post_data['profile-info']) && !empty($post_data['profile-info'])) $data['profile-info']=$post_data['profile-info'];
       
       if($post_data['type']=='org')
       {
-        if(isset($post_data['firstname']) && !empty($post_data['firstname'])) $data['firstname']=trim(urldecode($post_data['firstname']));
+        if(isset($post_data['firstname']) && !empty($post_data['firstname'])) $data['firstname']=trim(xss_clean($post_data['firstname']));
         if(isset($post_data['lastname']) && !empty($post_data['lastname'])) $data['lastname']='';
       }
       else
       {
-        if(isset($post_data['firstname']) && !empty($post_data['firstname'])) $data['firstname']=trim(urldecode($post_data['firstname']));
-        if(isset($post_data['lastname']) && !empty($post_data['lastname'])) $data['lastname']=trim(urldecode($post_data['lastname']));
+        if(isset($post_data['firstname']) && !empty($post_data['firstname'])) $data['firstname']=trim(xss_clean($post_data['firstname']));
+        if(isset($post_data['lastname']) && !empty($post_data['lastname'])) $data['lastname']=trim(xss_clean($post_data['lastname']));
       }
       
       date_default_timezone_set("Europe/Rome"); 
@@ -433,7 +435,7 @@ class Users extends REST_Controller
       
       $this->mongo_db->insert('users', $data);
       
-      $data=$this->mongo_db->select(array('_id'))->where(array('email' => trim(urldecode($post_data['email']))))->get('users');     
+      $data=$this->mongo_db->select(array('_id'))->where(array('email' => trim(xss_clean($post_data['email']))))->get('users');     
       
       if(isset($data[0]['_id']) && !empty($data[0]['_id']))
       {
