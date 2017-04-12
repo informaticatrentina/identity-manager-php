@@ -328,7 +328,7 @@ class Users extends REST_Controller
     if(isset($patch_data['firstname']) && !empty($patch_data['firstname'])) $data['firstname']=$patch_data['firstname'];
     if(isset($patch_data['lastname']) && !empty($patch_data['lastname'])) $data['lastname']=$patch_data['lastname'];
     if(isset($patch_data['nickname']) && !empty($patch_data['nickname'])) $data['nickname']=$patch_data['nickname'];
-    if(isset($patch_data['sex']) && !empty($patch_data['sex'])) $data['sex']=strtoupper((string)$patch_data['sex']);
+    if(isset($patch_data['sex']) && !empty($patch_data['sex'])) $data['sex']=$this->patch('sex');
     if(isset($patch_data['location']) && !empty($patch_data['location'])) $data['location']=$patch_data['location'];
     if(isset($patch_data['website']) && !empty($patch_data['website'])) $data['website']=$patch_data['website'];
     if(isset($patch_data['status']) && !empty($patch_data['status'])) $data['status']=$patch_data['status'];    
