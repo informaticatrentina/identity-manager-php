@@ -141,7 +141,7 @@ class Users extends REST_Controller
           {
             try 
             {
-              $mongo_user_id = new MongoId($where_string['_id']);
+              $mongo_user_id = new MongoId($where_string);
             } 
             catch (MongoException $ex) 
             {
