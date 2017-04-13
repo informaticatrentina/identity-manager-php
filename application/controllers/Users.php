@@ -139,22 +139,31 @@ class Users extends REST_Controller
           // Verifico _id
           if(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))
           {
-            $user_id=$where_string['_id'];   
-  
-            $data=$this->mongo_db->where(array('_id' => $user_id))->get('users');
-          
+            try 
+            {
+              $mongo_user_id = new MongoId($where_string['_id']);
+            } 
+            catch (MongoException $ex) 
+            {
+              $this->response(array('response' => 'ERR', 'message' => 'Utente ID non valido.'), REST_Controller::HTTP_OK);
+              return;
+            }     
+   
+            $data=$this->mongo_db->where(array('_id' => $mongo_user_id))->get('users');
             if(empty($data))
             {
               $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
               return;
             }
             else
-            {            
-              if(isset($data[0]['password'])) unset($data[0]['password']);
-              if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;
-            }
+            {
+              // Converto il campo _id in string
+              $data[0]['_id']=(string)$data[0]['_id'];
+              // Non trasmetto la password
+              unset($data[0]['password']);
+              $response_arr=$data[0];
+              $this->response(array('_items' => $response_arr), REST_Controller::HTTP_OK);
+            } 
           }          
         
           // Verifico Nickname
