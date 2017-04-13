@@ -136,6 +136,7 @@ class Users extends REST_Controller
               return;
             }
           }
+          
           // Verifico _id
           if(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))
           {
@@ -148,10 +149,13 @@ class Users extends REST_Controller
               $this->response(array('response' => 'ERR', 'message' => 'Utente ID non valido.'), REST_Controller::HTTP_OK);
               return;
             }
+
             $data=$this->mongo_db->where(array('_id' => $mongo_user_id))->get('users');
+
+
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+              $this->response(array('response' => 'ERR', '_items' => $mongo_user_id), REST_Controller::HTTP_OK);
               return;
             }
             else
@@ -161,10 +165,10 @@ class Users extends REST_Controller
               // Non trasmetto la password
               unset($data[0]['password']);
               $response_arr=$data[0];
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              $this->response(array('_items' => $data[0]), REST_Controller::HTTP_OK);
+              return;
             }
-          }
-         
+          }        
         
           // Verifico Nickname
           if(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname']))
