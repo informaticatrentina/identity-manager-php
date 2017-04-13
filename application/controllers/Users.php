@@ -14,7 +14,7 @@ require APPPATH . '/third_party/vendor/autoload.php';
  * @author  Stefano Beccalli
  * @copyright Copyright (c) 2017
  * @link  http://www.jlbbooks.it
- * @since Version 1.0.0
+ * @since Version 1.1.0
  */
 class Users extends REST_Controller 
 {
