@@ -24,7 +24,7 @@ class Users extends REST_Controller
     $this->load->helper('security');
   }
   
-    public function index_get($user_id=null)
+  public function index_get($user_id=null)
   {    
     $params=$this->get();   
    
@@ -135,7 +135,27 @@ class Users extends REST_Controller
               $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
               return;
             }
-          }      
+          }
+          // Verifico _id
+          if(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))
+          {
+            $user_id=$where_string['_id'];   
+  
+            $data=$this->mongo_db->where(array('_id' => $user_id))->get('users');
+          
+            if(empty($data))
+            {
+              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+              return;
+            }
+            else
+            {            
+              if(isset($data[0]['password'])) unset($data[0]['password']);
+              if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;
+            }
+          }          
         
           // Verifico Nickname
           if(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname']))
