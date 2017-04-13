@@ -165,7 +165,7 @@ class Users extends REST_Controller
               // Non trasmetto la password
               unset($data[0]['password']);
               $response_arr=$data[0];
-              $this->response(array('_items' => $data[0]), REST_Controller::HTTP_OK);
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
               return;
             }
           }        
