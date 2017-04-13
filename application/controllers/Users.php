@@ -24,7 +24,7 @@ class Users extends REST_Controller
     $this->load->helper('security');
   }
   
-  public function index_get($user_id=null)
+    public function index_get($user_id=null)
   {    
     $params=$this->get();   
    
@@ -281,6 +281,25 @@ class Users extends REST_Controller
             $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK); 
             return;
           }
+        }
+      }
+      elseif(isset($params['_id']) && !empty($params['_id']))
+      {
+        $user_id=$params['_id'];   
+  
+        $data=$this->mongo_db->where(array('_id' => $user_id))->get('users');
+          
+        if(empty($data))
+        {
+          $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+          return;
+        }
+        else
+        {            
+          if(isset($data[0]['password'])) unset($data[0]['password']);
+          if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
+          $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+          return;
         }
       }
       else $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
