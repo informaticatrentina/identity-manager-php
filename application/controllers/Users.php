@@ -29,12 +29,12 @@ class Users extends REST_Controller
     $params=$this->get();
 
     // Verifica password
-    file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
     if(!empty($params) && $user_id==NULL)
-    {      
-      file_put_contents('debug.log','sono qui',FILE_APPEND);
+    {     
+     
       if(isset($params['where']) && !empty($params['where']))
       {
+         file_put_contents('debug.log','DEBUG1',FILE_APPEND);
         $where_string = json_decode($params['where'],TRUE);
         
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Damn!
@@ -320,6 +320,7 @@ class Users extends REST_Controller
       }
       elseif(isset($params['_id']) && !empty($params['_id']))
       {
+        file_put_contents('debug.log','DEBUG2',FILE_APPEND);
         $user_id=$params['_id'];   
   
         $data=$this->mongo_db->where(array('_id' => $user_id))->get('users');
@@ -337,11 +338,14 @@ class Users extends REST_Controller
           return;
         }
       }
-      else $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+      else
+      {
+         file_put_contents('debug.log','DEBUG3',FILE_APPEND);
+        $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
+      } 
     }
     else // Ottengo i dati dell'utente
     {
-      file_put_contents('debug.log','sono quiiiiiii',FILE_APPEND);
       $this->response(array('response' => 'DEBUG', '_items' => 'SONO QUI'), REST_Controller::HTTP_OK);
       return;
       try 
