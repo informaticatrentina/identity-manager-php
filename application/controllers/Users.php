@@ -60,7 +60,7 @@ class Users extends REST_Controller
 	
 			              foreach ($where_string['$or'] as $wh => $val)
 			              {
-				              $where_cond[] = array($wh=>$val);
+                      array_push($where_cond,$wh. '=>'. $val);				              
 			              }			             
 		              }
                   file_put_contents('debug.log',print_r($where_cond,TRUE),FILE_APPEND);   
