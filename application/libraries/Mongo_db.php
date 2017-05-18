@@ -401,6 +401,7 @@ Class Mongo_db{
 	*/
 	public function where_or($wheres = array())
 	{
+		 file_put_contents('debug.log',print_r($wheres,TRUE),FILE_APPEND);   
 		if (is_array($wheres) && count($wheres) > 0)
 		{
 			if ( ! isset($this->wheres['$or']) || ! is_array($this->wheres['$or']))
