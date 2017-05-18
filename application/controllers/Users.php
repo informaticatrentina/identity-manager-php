@@ -57,10 +57,15 @@ class Users extends REST_Controller
                   if (is_array($where_string['$or']) && count($where_string['$or']) > 0)
 		              {
 	   	              $where_cond = array();                 
-	
-			              foreach ($where_string['$or'] as $val)
+	                  file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
+                    file_put_contents('debug.log','=================================',FILE_APPEND);   
+			              foreach ($where_string['$or'] as $key => $val)
 			              {
-                      file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND);
+                      if(is_array($val) && isset($val['_id']))
+                      {                        
+                        file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND);
+                      }
+                      file_put_contents('debug.log','=================================',FILE_APPEND);                         
                       array_push($where_cond,$val);				              
 			              }			             
 		              }
