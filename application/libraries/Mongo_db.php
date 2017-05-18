@@ -401,21 +401,26 @@ Class Mongo_db{
 	*/
 	public function where_or($wheres = array())
 	{
-		 file_put_contents('debug.log',print_r($wheres,TRUE),FILE_APPEND);   
+		
 		if (is_array($wheres) && count($wheres) > 0)
 		{
 			if ( ! isset($this->wheres['$or']) || ! is_array($this->wheres['$or']))
 			{
+				file_put_contents('debug.log','MIAOO111111111111111',FILE_APPEND); 
 				$this->wheres['$or'] = array();
 			}
+			file_put_contents('debug.log','MIAOO',FILE_APPEND); 
 			foreach ($wheres as $wh => $val)
 			{
+				file_put_contents('debug.log',print_r($wh,TRUE),FILE_APPEND);   
+				file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND); 
 				$this->wheres['$or'][] = array($wh=>$val);
 			}
+			file_put_contents('debug.log',print_r($this,TRUE),FILE_APPEND);   
 			return ($this);
 		}
 		else
-		{
+		{	file_put_contents('debug.log','fineee11111111',FILE_APPEND);
 			show_error("Where value should be an array.", 500);
 		}
 	}
