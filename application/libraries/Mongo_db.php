@@ -406,14 +406,11 @@ Class Mongo_db{
 		{
 			if ( ! isset($this->wheres['$or']) || ! is_array($this->wheres['$or']))
 			{
-				file_put_contents('debug.log','MIAOO111111111111111',FILE_APPEND); 
 				$this->wheres['$or'] = array();
 			}
-			file_put_contents('debug.log','MIAOO',FILE_APPEND); 
+	
 			foreach ($wheres as $wh => $val)
 			{
-				file_put_contents('debug.log',print_r($wh,TRUE),FILE_APPEND);   
-				file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND); 
 				$this->wheres['$or'][] = array($wh=>$val);
 			}
 			file_put_contents('debug.log',print_r($this,TRUE),FILE_APPEND);   
