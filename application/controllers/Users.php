@@ -43,15 +43,17 @@ class Users extends REST_Controller
         {      
           file_put_contents('debug.log','DEBUG1',FILE_APPEND);    
           if(isset($where_string['$or']))
-          {file_put_contents('debug.log','DEBUG2',FILE_APPEND);
+          {
+            file_put_contents('debug.log','DEBUG2',FILE_APPEND);
                 if(!empty($where_string['$or']))
-                {file_put_contents('debug.log','DEBUG3',FILE_APPEND);
+                {
+                  file_put_contents('debug.log','DEBUG3',FILE_APPEND);
                     if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
-                    {{file_put_contents('debug.log','DEBUG4',FILE_APPEND);
-                        if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
-                        {
+                    {
+                      if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
+                      {
                           return $this->_checkEmail($where_string['$or'][0]['email']);
-                        }
+                      }
                     }
                 }
           }
@@ -119,7 +121,7 @@ file_put_contents('debug.log','DEBUG5',FILE_APPEND);
               }
             }
           }    
-          file_put_contents('debug.log','DEBUG6',FILE_APPEND);    
+          
                   // Verifico Username
           if(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))
           {
@@ -322,6 +324,7 @@ file_put_contents('debug.log','DEBUG5',FILE_APPEND);
       }
       elseif(isset($params['_id']) && !empty($params['_id']))
       {
+         file_put_contents('debug.log','DEBUG1 qyuuu',FILE_APPEND);    
         $user_id=$params['_id'];   
   
         $data=$this->mongo_db->where(array('_id' => $user_id))->get('users');
@@ -341,6 +344,7 @@ file_put_contents('debug.log','DEBUG5',FILE_APPEND);
       }
       else
       {
+        file_put_contents('debug.log','DEBUG1 qyuuussssssss',FILE_APPEND);    
         $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
       } 
     }
