@@ -413,11 +413,10 @@ Class Mongo_db{
 			{
 				$this->wheres['$or'][] = array($wh=>$val);
 			}
-			file_put_contents('debug.log',print_r($this,TRUE),FILE_APPEND);   
 			return ($this);
 		}
 		else
-		{	file_put_contents('debug.log','fineee11111111',FILE_APPEND);
+		{
 			show_error("Where value should be an array.", 500);
 		}
 	}
