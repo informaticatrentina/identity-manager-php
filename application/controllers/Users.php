@@ -58,7 +58,7 @@ class Users extends REST_Controller
 		              {
 	   	              file_put_contents('debug.log','sono qui',FILE_APPEND);   
                    // $data=$this->mongo_db->where_or(array('_id' => new MongoId('58f09ad98ec388db308b457a'), '_id' => new MongoId('58f09f6a8ec388997d8b4571')))->get('users');
-                    $data=$this->mongo_db-> where_in('_id', array(new MongoId('58f09ad98ec388db308b457a'), new MongoId('58f09f6a8ec388997d8b4571')))->get('users');
+                    $data=$this->mongo_db->select(array('_updated','_created','_id','_links','email'))->where_in('_id', array(new MongoId('58f09ad98ec388db308b457a'), new MongoId('58f09f6a8ec388997d8b4571')))->get('users');
                    //('foo', array('bar', 'zoo', 'blah'))
                     file_put_contents('debug.log','vuoto o pieno',FILE_APPEND);   
                     file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
