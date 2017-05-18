@@ -40,24 +40,26 @@ class Users extends REST_Controller
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Damn!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {      
-          file_put_contents('debug.log','DEBUG1',FILE_APPEND);    
+        {
           if(isset($where_string['$or']))
           {
-            file_put_contents('debug.log','DEBUG2',FILE_APPEND);
-                if(!empty($where_string['$or']))
+            if(!empty($where_string['$or']))
+            {
+              if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
+              {
+                if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
                 {
-                  file_put_contents('debug.log','DEBUG3',FILE_APPEND);
-                    if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
-                    {
-                      if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
-                      {
-                          return $this->_checkEmail($where_string['$or'][0]['email']);
-                      }
-                    }
+                  return $this->_checkEmail($where_string['$or'][0]['email']);
                 }
+              }
+              else
+              {
+                file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
+                //where_or
+              }
+            }
           }
-file_put_contents('debug.log','DEBUG5',FILE_APPEND);
+
           if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {
             $email=urldecode($where_string['email']);
