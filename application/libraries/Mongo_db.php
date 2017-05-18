@@ -401,14 +401,12 @@ Class Mongo_db{
 	*/
 	public function where_or($wheres = array())
 	{
-		
 		if (is_array($wheres) && count($wheres) > 0)
 		{
 			if ( ! isset($this->wheres['$or']) || ! is_array($this->wheres['$or']))
 			{
 				$this->wheres['$or'] = array();
 			}
-	
 			foreach ($wheres as $wh => $val)
 			{
 				$this->wheres['$or'][] = array($wh=>$val);
