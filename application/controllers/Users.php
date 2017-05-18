@@ -69,6 +69,7 @@ class Users extends REST_Controller
                       {
                        if(isset($value['_created']->sec))
                        {
+                         file_put_contents('debug.log','sdffasd',FILE_APPEND);              
                         date_default_timezone_set('Europe/Rome');                        
                         $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
                        } 
