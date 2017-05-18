@@ -26,14 +26,11 @@ class Users extends REST_Controller
   
   public function index_get($user_id=null)
   {    
-    $params=$this->get();       
+    $params=$this->get();
 
-   
     // Verifica password
     if(!empty($params) && $user_id==NULL)
-    {  
-          $this->response(array('response' => 'DEBUG', '_items' => 'sibi qyu'), REST_Controller::HTTP_OK);
-    return;
+    {      
       if(isset($params['where']) && !empty($params['where']))
       {
         $where_string = json_decode($params['where'],TRUE);
@@ -345,6 +342,8 @@ class Users extends REST_Controller
     }
     else // Ottengo i dati dell'utente
     {
+      $this->response(array('response' => 'DEBUG', '_items' => 'SONO QUI'), REST_Controller::HTTP_OK);
+      return;
       try 
       {
         $mongo_user_id = new MongoId($user_id);
