@@ -63,7 +63,7 @@ class Users extends REST_Controller
                     }
 
                     $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');            
-                    if(empty($data))
+                    if(!empty($data))
                     {
                       foreach($data as $key => $value)
                       {
