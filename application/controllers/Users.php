@@ -55,6 +55,7 @@ class Users extends REST_Controller
                 else
                 {
                   file_put_contents('debug.log','sono qui',FILE_APPEND);   
+                  die('sono qui');
                   $data=$this->mongo_db->where_or(array($where_string['$or']))->get('users');
                   file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                  
                 }
