@@ -68,10 +68,10 @@ class Users extends REST_Controller
                       foreach($data as $key => $value)
                       {   
                        if(isset($value['_created']))
-                       {     
-                         file_put_contents('debug.log',print_r($value['_created']->sec,TRUE),FILE_APPEND);                                  
+                       {                                                               
                         date_default_timezone_set('Europe/Rome');                        
                         $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                        file_put_contents('debug.log',print_r($data[$key]['_created'],TRUE),FILE_APPEND); 
                        } 
                       }
                     }           
