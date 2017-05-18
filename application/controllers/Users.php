@@ -27,6 +27,8 @@ class Users extends REST_Controller
   public function index_get($user_id=null)
   {    
     $params=$this->get();   
+    die(print_r($params));
+    //$this->response(array('response' => 'DEBUG', '_items' => array($params)), REST_Controller::HTTP_OK);
    
     // Verifica password
     if(!empty($params) && $user_id==NULL)
