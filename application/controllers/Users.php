@@ -29,8 +29,10 @@ class Users extends REST_Controller
     $params=$this->get();
 
     // Verifica password
+    file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
     if(!empty($params) && $user_id==NULL)
     {      
+      file_put_contents('debug.log','sono qui',FILE_APPEND);
       if(isset($params['where']) && !empty($params['where']))
       {
         $where_string = json_decode($params['where'],TRUE);
@@ -272,7 +274,6 @@ class Users extends REST_Controller
                 }
                 else
                 {
-                  die('sfas sono qui');
                   $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                   return;
                 }
@@ -280,7 +281,6 @@ class Users extends REST_Controller
             }
             else
             {
-              die('sono qui');
               $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);          
               return;
             }
@@ -305,7 +305,6 @@ class Users extends REST_Controller
             }
             else
             {
-              die('oppure qui');
               $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
               return;
             }
@@ -342,6 +341,7 @@ class Users extends REST_Controller
     }
     else // Ottengo i dati dell'utente
     {
+      file_put_contents('debug.log','sono quiiiiiii',FILE_APPEND);
       $this->response(array('response' => 'DEBUG', '_items' => 'SONO QUI'), REST_Controller::HTTP_OK);
       return;
       try 
