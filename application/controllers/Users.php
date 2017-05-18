@@ -56,11 +56,16 @@ class Users extends REST_Controller
                 {
                   if (is_array($where_string['$or']) && count($where_string['$or']) > 0)
 		              {
-	   	              file_put_contents('debug.log','sono qui',FILE_APPEND);   
+                    $where_conditions=array();
+                    foreach($where_string['$or'] as $val)
+                    {
+                      if(isset($val['_id'])) $where_conditions[]=new MongoId($val['_id']);                      
+                    }
+	   	              file_put_contents('debug.log',print_r($where_conditions,TRUE),FILE_APPEND);   
                    // $data=$this->mongo_db->where_or(array('_id' => new MongoId('58f09ad98ec388db308b457a'), '_id' => new MongoId('58f09f6a8ec388997d8b4571')))->get('users');
-                    $data=$this->mongo_db->select(array('_updated','_created','_id','_links','email'))->where_in('_id', array(new MongoId('58f09ad98ec388db308b457a'), new MongoId('58f09f6a8ec388997d8b4571')))->get('users');
+                    $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');
                    //('foo', array('bar', 'zoo', 'blah'))
-                    file_put_contents('debug.log','vuoto o pieno',FILE_APPEND);   
+           
                     file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
 		              }              
                 }
