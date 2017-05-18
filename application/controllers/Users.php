@@ -272,6 +272,7 @@ class Users extends REST_Controller
                 }
                 else
                 {
+                  die('sfas sono qui');
                   $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
                   return;
                 }
