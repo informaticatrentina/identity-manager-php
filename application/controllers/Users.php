@@ -81,6 +81,10 @@ class Users extends REST_Controller
                         {
                           $data[$key]['_id']=(string)$value['_id'];
                         }
+                          $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => 'www.google.it'));
+                        // Elimino Password e ResetPwd
+                        unset($data[$key]['password']);
+                        unset($data[$key]['resetpwd']);
                       }
                     }           
                     file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
