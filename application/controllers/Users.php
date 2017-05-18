@@ -75,7 +75,7 @@ class Users extends REST_Controller
                        } 
                       }
                     }           
-                    //file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
+                    file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
 		              }              
                 }
               }
