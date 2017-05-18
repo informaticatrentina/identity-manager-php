@@ -279,6 +279,7 @@ class Users extends REST_Controller
             }
             else
             {
+              die('sono qui');
               $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);          
               return;
             }
@@ -303,6 +304,7 @@ class Users extends REST_Controller
             }
             else
             {
+              die('oppure qui');
               $this->response(array('response' => 'ERR', 'message' => 'Credenziali di accesso non corrette.'), REST_Controller::HTTP_OK);
               return;
             }
