@@ -86,8 +86,9 @@ class Users extends REST_Controller
                         unset($data[$key]['password']);
                         unset($data[$key]['resetpwd']);
                       }
-                    }           
-                    file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);                 	             
+                    }                   
+                    $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                    return;                	             
 		              }              
                 }
               }
