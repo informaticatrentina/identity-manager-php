@@ -250,8 +250,10 @@ class Users extends REST_Controller
           if(preg_match('/(or:){1}/',$params['where']))
           {
             $params['where'] = str_replace('$or:', '', $params['where']);    
-            $params['where'] = str_replace('{[', '', $params['where']);    
-            $params['where'] = str_replace(']}', '', $params['where']);    
+            $params['where'] = str_replace('{[', '', $params['where']);                
+            $params['where'] = str_replace(']}', '', $params['where']); 
+            $params['where'] = str_replace('{', '', $params['where']); 
+            $params['where'] = str_replace('}', '', $params['where']);    
              
             file_put_contents('debug.log',print_r($params['where'],TRUE),FILE_APPEND);
           }
