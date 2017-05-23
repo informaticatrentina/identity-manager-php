@@ -28,6 +28,8 @@ class Users extends REST_Controller
   {    
     $params=$this->get();
 
+    file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
+
     // Verifica password
     if(!empty($params) && $user_id==NULL)
     {     
