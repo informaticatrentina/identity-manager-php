@@ -251,9 +251,10 @@ class Users extends REST_Controller
           }
           
           $data=explode(",", $params['where']); 
-
-          file_put_contents('debug.log','DEBUG5',FILE_APPEND);  
+   file_put_contents('debug.log',print_r($params['where'],TRUE),FILE_APPEND);
           file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);  
+          file_put_contents('debug.log','DEBUG5',FILE_APPEND);  
+       
           if(count($data)==2 && isset($data[0]) && isset($data[1]) && !empty($data[0]) && !empty($data[1]))
           {
             $data[0]=str_replace('{', '', $data[0]);
