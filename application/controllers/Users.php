@@ -248,10 +248,11 @@ class Users extends REST_Controller
           {
             file_put_contents('debug.log','DEBUG4',FILE_APPEND);       
             $params['where'] = str_replace('\x22', '', $params['where']);
+            $params['where'] = str_replace('$or:', '', $params['where']);
           }
           
           $data=explode(",", $params['where']); 
-   file_put_contents('debug.log',print_r($params['where'],TRUE),FILE_APPEND);
+          file_put_contents('debug.log',print_r($params['where'],TRUE),FILE_APPEND);
           file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);  
           file_put_contents('debug.log','DEBUG5',FILE_APPEND);  
        
