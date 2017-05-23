@@ -28,7 +28,7 @@ class Users extends REST_Controller
   {    
     $params=$this->get();
 
-    file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
+    //file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
 
     // Verifica password
     if(!empty($params) && $user_id==NULL)
@@ -38,11 +38,12 @@ class Users extends REST_Controller
       {
         $where_string = json_decode($params['where'],TRUE);
 
-                
+         file_put_contents('debug.log','DEBUG1',FILE_APPEND);       
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Damn!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
         {
+          file_put_contents('debug.log','DEBUG2',FILE_APPEND);       
           if(isset($where_string['$or']))
           {
             if(!empty($where_string['$or']))
@@ -241,14 +242,16 @@ class Users extends REST_Controller
         }
         else
         {         
+          file_put_contents('debug.log','DEBUG3',FILE_APPEND);       
           // Remove Refuso modulo Python char \x22
           if(is_string($params['where']))
           {
+            file_put_contents('debug.log','DEBUG4',FILE_APPEND);       
             $params['where'] = str_replace('\x22', '', $params['where']);
           }
           
           $data=explode(",", $params['where']); 
-          
+          file_put_contents('debug.log','DEBUG5',FILE_APPEND);  
           if(count($data)==2 && isset($data[0]) && isset($data[1]) && !empty($data[0]) && !empty($data[1]))
           {
             $data[0]=str_replace('{', '', $data[0]);
@@ -329,9 +332,10 @@ class Users extends REST_Controller
               return;
             }
           }
-          
+           file_put_contents('debug.log','DEBUG6',FILE_APPEND);  
           if(count($data)==1 && isset($data[0]) && !empty($data[0]))
           {
+             file_put_contents('debug.log','DEBUG7',FILE_APPEND);  
             $data[0]=str_replace('{', '', $data[0]);
             $data[0]=str_replace('}', '', $data[0]);
             $data[0]=str_replace('[', '', $data[0]);
@@ -354,9 +358,10 @@ class Users extends REST_Controller
             }
               
           }
-          
+          file_put_contents('debug.log','DEBUG8',FILE_APPEND); 
           if(empty($count))
           {
+             file_put_contents('debug.log','DEBUG9',FILE_APPEND); 
             $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK); 
             return;
           }
