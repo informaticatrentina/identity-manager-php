@@ -258,8 +258,10 @@ class Users extends REST_Controller
             if(preg_match('/(_id){1}/',$params['where']))
             {
               $params['where'] = str_replace('_id', '', $params['where']); 
-              $data=explode(":", $params['where']);
-              file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);
+              $data=explode(":", $params['where']);              
+              $clean_data=array_filter($data);
+              $final_data=array_values($clean_data);
+              file_put_contents('debug.log',print_r($final_data,TRUE),FILE_APPEND);
             } 
 
             
