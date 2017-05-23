@@ -262,6 +262,40 @@ class Users extends REST_Controller
               $clean_data=array_filter($data);
               $final_data=array_values($clean_data);
               file_put_contents('debug.log',print_r($final_data,TRUE),FILE_APPEND);
+
+              $where_conditions=array();
+              foreach($final_data as $val)
+              {
+                $where_conditions[]=new MongoId($val);                      
+              }
+
+              $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');            
+              if(!empty($data))
+              {
+                foreach($data as $key => $value)
+                {   
+                  if(isset($value['_created']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                  } 
+                  if(isset($value['_updated']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['_id']))
+                  {
+                    $data[$key]['_id']=(string)$value['_id'];
+                  }
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => 'www.google.it'));
+                    // Elimino Password e ResetPwd
+                    unset($data[$key]['password']);
+                    unset($data[$key]['resetpwd']);
+                }
+              }                   
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;       
             } 
 
             
