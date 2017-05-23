@@ -252,10 +252,11 @@ class Users extends REST_Controller
             $params['where'] = str_replace(']}', '', $params['where']); 
             $params['where'] = str_replace('{', '', $params['where']); 
             $params['where'] = str_replace('}', '', $params['where']);    
+            $params['where'] = str_replace(',', '', $params['where']);   
 
-            $data=explode(":", $params['where']);
+            //$data=explode(":", $params['where']);
              
-            file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);
+            file_put_contents('debug.log',print_r($params['where'],TRUE),FILE_APPEND);
           }
           else
           {
