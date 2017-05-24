@@ -282,7 +282,7 @@ class Users extends REST_Controller
               }
               if($dataprojection=='email')
               {
-                $data=$this->mongo_db->select(array('email','_created','_updated'))->where_in('_id', $where_conditions)->get('users');            
+                $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
 
