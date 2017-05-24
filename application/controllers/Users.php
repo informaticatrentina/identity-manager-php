@@ -247,7 +247,10 @@ class Users extends REST_Controller
 
           if(isset($params['projection']) && is_string($params['projection']))
           {   
-            $params['projection'] = str_replace('\x22', '', $params['projection']);   
+            $params['projection'] = str_replace('\x22', '', $params['projection']);
+            $params['projection'] = str_replace('{', '', $params['projection']); 
+            $params['projection'] = str_replace('}', '', $params['projection']);   
+
              die(print_r($params['projection']));         
           }
           
