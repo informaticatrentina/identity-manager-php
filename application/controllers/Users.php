@@ -298,7 +298,7 @@ class Users extends REST_Controller
               return;       
             }
 
-            if(preg_match('/(_email){1}/',$params['where']))
+            if(preg_match('/(email){1}/',$params['where']))
             {
               $params['where'] = str_replace('_email', '', $params['where']); 
               $data=explode(":", $params['where']);              
