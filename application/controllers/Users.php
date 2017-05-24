@@ -254,11 +254,9 @@ class Users extends REST_Controller
             $dataprojection=explode(":", $params['projection']); 
 
             if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
-            if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';
-
-             
+            if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
           }
-          die(print_r($dataprojection));
+
           // Richiesta $or:
           if(preg_match('/(or:){1}/',$params['where']))
           {
@@ -282,8 +280,13 @@ class Users extends REST_Controller
               {
                 $where_conditions[]=new MongoId($val);                      
               }
+              if($dataprojection=='email')
+              {
+                $data=$this->mongo_db->select(array('email','_created','_updated'))->where_in('_id', $where_conditions)->get('users');            
+              }
+              else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
 
-              $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');            
+              die(print_r($data));
               if(!empty($data))
               {
                 foreach($data as $key => $value)
@@ -302,10 +305,10 @@ class Users extends REST_Controller
                   {
                     $data[$key]['_id']=(string)$value['_id'];
                   }
-                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => 'www.google.it'));
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME']));
                     // Elimino Password e ResetPwd
                     unset($data[$key]['password']);
-                    unset($data[$key]['resetpwd']);
+                    unset($data[$key]['resetpwd']);          
                 }
               }                   
               $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
