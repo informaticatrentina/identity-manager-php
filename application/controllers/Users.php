@@ -314,6 +314,7 @@ class Users extends REST_Controller
                     unset($data[$key]['password']);
                     unset($data[$key]['resetpwd']);          
                 }
+                $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'));
               }                   
               $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
               return;       
