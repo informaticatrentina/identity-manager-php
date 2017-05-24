@@ -238,7 +238,7 @@ class Users extends REST_Controller
         }
         else
         {           
-          die(print_r($params['where']));
+          die(print_r($params['projection']));
           // Remove Refuso modulo Python char \x22
           if(is_string($params['where']))
           {   
