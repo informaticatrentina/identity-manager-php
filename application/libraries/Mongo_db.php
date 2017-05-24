@@ -1,5 +1,4 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
 * CodeIgniter MongoDB Active Record Library
 *
@@ -13,9 +12,7 @@
 * @version Version 1.0
 * Thanks to Alex Bilbie (http://alexbilbie.com) for help.
 */
-
 Class Mongo_db{
-
 	private $CI;
 	private $config = array();
 	private $param = array();
@@ -38,7 +35,6 @@ Class Mongo_db{
 	private $sorts	= array();
 	private $return_as = 'array';
 	public $benchmark = array();
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Class Constructor
@@ -50,10 +46,8 @@ Class Mongo_db{
 	* Prepare the connection variables and establish a connection to the MongoDB.
 	* Try to connect on MongoDB server.
 	*/
-
 	function __construct($param)
 	{
-
 		if ( ! class_exists('Mongo') && ! class_exists('MongoClient'))
 		{
 			show_error("The MongoDB PECL extension has not been installed or enabled", 500);
@@ -64,7 +58,6 @@ Class Mongo_db{
 		$this->param = $param;
 		$this->connect();
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Class Destructor
@@ -79,7 +72,6 @@ Class Mongo_db{
 			$this->connect->close();
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Prepare configuration for mongoDB connection
@@ -88,7 +80,6 @@ Class Mongo_db{
 	* Validate group name or autoload default group name from config file.
 	* Validate all the properties present in config file of the group.
 	*/
-
 	private function prepare()
 	{
 		if(is_array($this->param) && count($this->param) > 0 && isset($this->param['activate']) == TRUE)
@@ -102,7 +93,6 @@ Class Mongo_db{
 		{
 			show_error("MongoDB configuration is missing.", 500);
 		}
-
 		if(isset($this->config[$this->activate]) == TRUE)
 		{
 			if(empty($this->config[$this->activate]['hostname']))
@@ -113,7 +103,6 @@ Class Mongo_db{
 			{
 				$this->hostname = trim($this->config[$this->activate]['hostname']);
 			}
-
 			if(empty($this->config[$this->activate]['port']))
 			{
 				show_error("Port number missing from mongodb config group : {$this->activate}", 500);
@@ -122,8 +111,8 @@ Class Mongo_db{
 			{
 				$this->port = trim($this->config[$this->activate]['port']);
 			}
-
-			if(empty($this->config[$this->activate]['username']))
+			if(isset($this->config[$this->activate]['no_auth']) == FALSE
+			   && empty($this->config[$this->activate]['username']))
 			{
 				show_error("Username missing from mongodb config group : {$this->activate}", 500);
 			}
@@ -131,8 +120,8 @@ Class Mongo_db{
 			{
 				$this->username = trim($this->config[$this->activate]['username']);
 			}
-
-			if(empty($this->config[$this->activate]['password']))
+			if(isset($this->config[$this->activate]['no_auth']) == FALSE 
+			   && empty($this->config[$this->activate]['password']))
 			{
 				show_error("Password missing from mongodb config group : {$this->activate}", 500);
 			}
@@ -140,7 +129,6 @@ Class Mongo_db{
 			{
 				$this->password = trim($this->config[$this->activate]['password']);
 			}
-
 			if(empty($this->config[$this->activate]['database']))
 			{
 				show_error("Database name missing from mongodb config group : {$this->activate}", 500);
@@ -149,7 +137,6 @@ Class Mongo_db{
 			{
 				$this->database = trim($this->config[$this->activate]['database']);
 			}
-
 			if(empty($this->config[$this->activate]['db_debug']))
 			{
 				$this->debug = FALSE;
@@ -158,7 +145,6 @@ Class Mongo_db{
 			{
 				$this->debug = $this->config[$this->activate]['db_debug'];
 			}
-
 			if(empty($this->config[$this->activate]['write_concerns']))
 			{
 				$this->write_concerns = 1;
@@ -167,7 +153,6 @@ Class Mongo_db{
 			{
 				$this->write_concerns = $this->config[$this->activate]['write_concerns'];
 			}
-
 			if(empty($this->config[$this->activate]['journal']))
 			{
 				$this->journal = TRUE;
@@ -176,7 +161,6 @@ Class Mongo_db{
 			{
 				$this->journal = $this->config[$this->activate]['journal'];
 			}
-
 			if(empty($this->config[$this->activate]['return_as']))
 			{
 				$this->return_as = 'array';
@@ -191,7 +175,6 @@ Class Mongo_db{
 			show_error("mongodb config group :  <strong>{$this->activate}</strong> does not exist.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Connect to MongoDB Database
@@ -199,7 +182,6 @@ Class Mongo_db{
 	* 
 	* Connect to mongoDB database or throw exception with the error message.
 	*/
-
 	private function connect()
 	{
 		$this->prepare();
@@ -230,7 +212,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Insert
@@ -246,12 +227,10 @@ Class Mongo_db{
 		{
 			show_error("No Mongo collection selected to insert into", 500);
 		}
-
 		if (!is_array($insert) || count($insert) == 0)
 		{
 			show_error("Nothing to insert into Mongo collection or insert is not an array", 500);
 		}
-
 		try
 		{
 			$this->db->{$collection}->insert($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
@@ -276,7 +255,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Batch Insert
@@ -285,6 +263,7 @@ Class Mongo_db{
 	* Insert a multiple document into the collection
 	*
 	* @usage : $this->mongo_db->batch_insert('foo', $data = array());
+	* @return : bool or array : if query fail then false else array of _id successfully inserted.
 	*/
 	public function batch_insert($collection = "", $insert = array())
 	{
@@ -299,13 +278,14 @@ Class Mongo_db{
 		try
 		{
 			$this->db->{$collection}->batchInsert($insert, array('w' => $this->write_concerns, 'j'=>$this->journal));
-			if (isset($insert['_id']))
+			if(is_array($insert) && count($insert) > 0)
 			{
-				return ($insert['_id']);
+			    $insert_ids = array_map(function ($arr) {return $arr['_id'];},$insert);
+			    return ($insert_ids);
 			}
-			else
+			else 
 			{
-				return (FALSE);
+			    return (FALSE);
 			}
 		}
 		catch (MongoCursorException $e)
@@ -320,7 +300,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Select
@@ -362,7 +341,6 @@ Class Mongo_db{
 		}
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Where
@@ -389,7 +367,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* or where
@@ -418,7 +395,6 @@ Class Mongo_db{
 			show_error("Where value should be an array.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where in
@@ -434,7 +410,6 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform where in query.", 500);
 		}
-
 		if (is_array($in) && count($in) > 0)
 		{
 			$this->_w($field);
@@ -446,7 +421,6 @@ Class Mongo_db{
 			show_error("in value should be an array.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where in all
@@ -462,7 +436,6 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform where all in query.", 500);
 		}
-
 		if (is_array($in) && count($in) > 0)
 		{
 			$this->_w($field);
@@ -474,7 +447,6 @@ Class Mongo_db{
 			show_error("in value should be an array.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where not in
@@ -490,7 +462,6 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform where not in query.", 500);
 		}
-
 		if (is_array($in) && count($in) > 0)
 		{
 			$this->_w($field);
@@ -502,7 +473,6 @@ Class Mongo_db{
 			show_error("in value should be an array.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where greater than
@@ -518,17 +488,14 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform greater then query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's value is require to perform greater then query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$gt'] = $x;
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where greater than or equal to
@@ -544,17 +511,14 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform greater then or equal query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's value is require to perform greater then or equal query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$gte'] = $x;
 		return($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where less than
@@ -570,17 +534,14 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform less then query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's value is require to perform less then query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$lt'] = $x;
 		return($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where less than or equal to
@@ -596,17 +557,14 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform less then or equal to query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's value is require to perform less then or equal to query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$lte'] = $x;
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where between
@@ -622,23 +580,19 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform greater then or equal to query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's start value is require to perform greater then or equal to query.", 500);
 		}
-
 		if (!isset($y))
 		{
 			show_error("Mongo field's end value is require to perform greater then or equal to query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$gte'] = $x;
 		$this->wheres[$field]['$lte'] = $y;
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where between and but not equal to
@@ -654,23 +608,19 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform between and but not equal to query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's start value is require to perform between and but not equal to query.", 500);
 		}
-
 		if (!isset($y))
 		{
 			show_error("Mongo field's end value is require to perform between and but not equal to query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$gt'] = $x;
 		$this->wheres[$field]['$lt'] = $y;
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where not equal
@@ -686,17 +636,14 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform Where not equal to query.", 500);
 		}
-
 		if (!isset($x))
 		{
 			show_error("Mongo field's value is require to perform Where not equal to query.", 500);
 		}
-
 		$this->_w($field);
 		$this->wheres[$field]['$ne'] = $x;
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Like
@@ -732,12 +679,10 @@ Class Mongo_db{
 		{
 			show_error("Mongo field is require to perform like query.", 500);
 		}
-
 		if (empty($value))
 		{
 			show_error("Mongo field's value is require to like query.", 500);
 		}
-
 		$field = (string) trim($field);
 		$this->_w($field);
 		$value = (string) trim($value);
@@ -754,7 +699,6 @@ Class Mongo_db{
 		$this->wheres[$field] = new MongoRegex($regex);
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* // Get
@@ -813,7 +757,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* // Get where
@@ -835,7 +778,6 @@ Class Mongo_db{
 			show_error("Nothing passed to perform search or value is empty.", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* // Find One
@@ -847,14 +789,11 @@ Class Mongo_db{
 	*/
 	public function find_one($collection = "")
 	{
-
 		if (empty($collection))
 		{
 			show_error("In order to retrieve documents from MongoDB, a collection name must be passed", 500);
 		}
-
 		try{
-
 			$document = $this->db->{$collection}->findOne($this->wheres, $this->selects);
 			// Clear
 			$this->_clear();
@@ -886,7 +825,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Count
@@ -906,7 +844,6 @@ Class Mongo_db{
 		$this->_clear();
 		return ($count);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Set
@@ -933,7 +870,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Unset
@@ -960,7 +896,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Add to set
@@ -984,7 +919,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Push
@@ -1011,7 +945,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Pop
@@ -1038,7 +971,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Pull
@@ -1054,7 +986,6 @@ Class Mongo_db{
 		$this->updates['$pull'] = array($field => $value);
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Rename field
@@ -1070,7 +1001,6 @@ Class Mongo_db{
 		$this->updates['$rename'] = array($old => $new);
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Inc
@@ -1096,7 +1026,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Multiple
@@ -1122,7 +1051,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Maximum
@@ -1148,7 +1076,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Minimum
@@ -1174,7 +1101,6 @@ Class Mongo_db{
 		}
 		return $this;
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! distinct
@@ -1190,12 +1116,10 @@ Class Mongo_db{
 		{
 			show_error("No Mongo collection selected for update", 500);
 		}
-
 		if (empty($field))
 		{
 			show_error("Need Collection field information for performing distinct query", 500);
 		}
-
 		try
 		{
 			$documents = $this->db->{$collection}->distinct($field, $this->wheres);
@@ -1221,7 +1145,6 @@ Class Mongo_db{
 			}
 		}
 	}	
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Update
@@ -1237,10 +1160,9 @@ Class Mongo_db{
 		{
 			show_error("No Mongo collection selected for update", 500);
 		}
-
 		try
 		{
-			$options = array_merge($options, array('w' => $this->write_concerns, 'j'=>$this->journal, 'multiple' => FALSE));
+			$options = array_merge(array('w' => $this->write_concerns, 'j'=>$this->journal, 'multiple' => FALSE), $options);
 			$this->db->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
 			return (TRUE);
@@ -1257,7 +1179,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Update all
@@ -1283,7 +1204,7 @@ Class Mongo_db{
 		}
 		try
 		{
-			$options = array_merge($options, array('w' => $this->write_concerns, 'j'=>$this->journal, 'multiple' => TRUE));
+			$options = array_merge(array('w' => $this->write_concerns, 'j'=>$this->journal, 'multiple' => TRUE), $options);
 			$this->db->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
 			return (TRUE);
@@ -1300,7 +1221,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Delete
@@ -1335,7 +1255,6 @@ Class Mongo_db{
 			
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Delete all
@@ -1373,7 +1292,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Aggregation Operation
@@ -1394,7 +1312,6 @@ Class Mongo_db{
 	 	{
 	 		show_error("Operation must be an array to perform aggregate.", 500);
 	 	}
-
 	 	try
 	 	{
 	 		$documents = $this->db->{$collection}->aggregate($operation);
@@ -1420,7 +1337,6 @@ Class Mongo_db{
 			}
 		}
     }
-
 	/**
 	* --------------------------------------------------------------------------------
 	* // Order by
@@ -1447,7 +1363,6 @@ Class Mongo_db{
 		}
 		return ($this);
 	}
-
 	 /**
 	* --------------------------------------------------------------------------------
 	* Mongo Date
@@ -1470,7 +1385,6 @@ Class Mongo_db{
 		}
 		
 	}
-
 	 /**
 	* --------------------------------------------------------------------------------
 	* Mongo Benchmark
@@ -1501,7 +1415,6 @@ Class Mongo_db{
 		}
 		return ($this);
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* // Offset
@@ -1519,7 +1432,57 @@ Class Mongo_db{
 		}
 		return ($this);
 	}
-
+	
+	/**
+	* --------------------------------------------------------------------------------
+	* // Command
+	* --------------------------------------------------------------------------------
+	*
+	* Runs a MongoDB command
+	*
+	* @param  string : Collection name, array $query The command query
+	* @usage : $this->mongo_db->command($collection, array('geoNear'=>'buildings', 'near'=>array(53.228482, -0.547847), 'num' => 10, 'nearSphere'=>true));
+	* @access public
+        * @return object or array
+	*/
+	
+        public function command($collection, $command = array())
+        {
+		if (empty($collection))
+		{
+			show_error("No Mongo collection specified to run command", 500);
+		}
+		
+		if (empty($command) || ! is_array($command))
+		{
+			show_error("no command were specified", 500);
+		}
+		
+                try
+                {
+                        $returns = $this->db->{$collection}->command($query);
+			
+                        if ($this->return_as == 'object')
+			{
+				return (object)$returns;
+			}
+			else
+			{
+				return $returns;
+			}
+                }
+                catch (MongoCursorException $e)
+		{
+			if(isset($this->debug) == TRUE && $this->debug == TRUE)
+			{
+				show_error("Command failed : {$e->getMessage()}", 500);
+			}
+			else
+			{
+				show_error("Command failed.", 500);
+			}
+		}
+        }
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Add indexes
@@ -1537,12 +1500,10 @@ Class Mongo_db{
 		{
 			show_error("No Mongo collection specified to add index to", 500);
 		}
-
 		if (empty($keys) || ! is_array($keys))
 		{
 			show_error("Index could not be created to MongoDB Collection because no keys were specified", 500);
 		}
-
 		foreach ($keys as $col => $val)
 		{
 			if($val == -1 || $val === FALSE || strtolower($val) == 'desc')
@@ -1557,7 +1518,7 @@ Class Mongo_db{
 		try{
 			$this->db->{$collection}->createIndex($keys, $options);
 			$this->_clear();
-			return ($this);
+			return TRUE;
 		}
 		catch (MongoCursorException $e)
 		{
@@ -1571,7 +1532,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Remove index
@@ -1589,17 +1549,15 @@ Class Mongo_db{
 		{
 			show_error("No Mongo collection specified to remove index from", 500);
 		}
-
 		if (empty($keys) || ! is_array($keys))
 		{
 			show_error("Index could not be removed from MongoDB Collection because no keys were specified", 500);
 		}
-
 		try
 		{	
 			$this->db->{$collection}->deleteIndex($keys);
 			$this->_clear();
-			return ($this);
+			return TRUE;
 		}
 		catch (MongoCursorException $e)
 		{
@@ -1613,7 +1571,6 @@ Class Mongo_db{
 			}
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* List indexes
@@ -1631,7 +1588,6 @@ Class Mongo_db{
 		}
 		return ($this->db->{$collection}->getIndexInfo());
 	}	
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Switch database
@@ -1647,9 +1603,7 @@ Class Mongo_db{
 		{
 			show_error("To switch MongoDB databases, a new database name must be specified", 500);
 		}
-
 		$this->database = $database;
-
 		try
 		{
 			$this->db = $this->connect->{$this->database};
@@ -1660,7 +1614,6 @@ Class Mongo_db{
 			show_error("Unable to switch Mongo Databases: {$e->getMessage()}", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Drop database
@@ -1675,7 +1628,6 @@ Class Mongo_db{
 		{
 			show_error('Failed to drop MongoDB database because name is empty', 500);
 		}
-
 		try
 		{
 			$this->connect->{$database}->drop();
@@ -1686,7 +1638,6 @@ Class Mongo_db{
 			show_error("Unable to drop Mongo database `{$database}`: {$e->getMessage()}", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* //! Drop collection
@@ -1701,7 +1652,6 @@ Class Mongo_db{
 		{
 			show_error('Failed to drop MongoDB collection because collection name is empty', 500);
 		}
-
 		try
 		{
 			$this->db->{$col}->drop();
@@ -1712,7 +1662,6 @@ Class Mongo_db{
 			show_error("Unable to drop Mongo collection `{$col}`: {$e->getMessage()}", 500);
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* _clear
@@ -1729,7 +1678,6 @@ Class Mongo_db{
 		$this->offset	= 0;
 		$this->sorts	= array();
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Where initializer
@@ -1744,7 +1692,6 @@ Class Mongo_db{
 			$this->wheres[ $param ] = array();
 		}
 	}
-
 	/**
 	* --------------------------------------------------------------------------------
 	* Update initializer
@@ -1759,7 +1706,6 @@ Class Mongo_db{
 			$this->updates[ $method ] = array();
 		}
 	}
-
 	private function explain($cursor, $collection, $aggregate=null)
 	{
 		array_push($this->benchmark, 
