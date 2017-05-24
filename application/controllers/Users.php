@@ -300,7 +300,7 @@ class Users extends REST_Controller
 
             if(preg_match('/(email){1}/',$params['where']))
             {
-              $params['where'] = str_replace('_email', '', $params['where']); 
+              $params['where'] = str_replace('email', '', $params['where']); 
               $data=explode(":", $params['where']);              
               $clean_data=array_filter($data);
               $final_data=array_values($clean_data);
@@ -309,7 +309,7 @@ class Users extends REST_Controller
               $where_conditions=array();
               foreach($final_data as $val)
               {
-                $where_conditions[]=new MongoId($val);                      
+                $where_conditions[]=$val;                      
               }
 
               $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');            
