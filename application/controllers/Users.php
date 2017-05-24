@@ -261,7 +261,6 @@ class Users extends REST_Controller
               $data=explode(":", $params['where']);              
               $clean_data=array_filter($data);
               $final_data=array_values($clean_data);
-              file_put_contents('debug.log',print_r($final_data,TRUE),FILE_APPEND);
 
               $where_conditions=array();
               foreach($final_data as $val)
@@ -304,7 +303,6 @@ class Users extends REST_Controller
               $data=explode(":", $params['where']);              
               $clean_data=array_filter($data);
               $final_data=array_values($clean_data);
-              file_put_contents('debug.log',print_r($final_data,TRUE),FILE_APPEND);
 
               $where_conditions=array();
               foreach($final_data as $val)
