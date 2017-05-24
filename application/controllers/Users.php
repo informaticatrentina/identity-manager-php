@@ -239,6 +239,7 @@ class Users extends REST_Controller
         else
         {           
          
+          $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
           if(isset($params['where']) && is_string($params['where']))
           {   
@@ -252,9 +253,12 @@ class Users extends REST_Controller
             $params['projection'] = str_replace('}', '', $params['projection']);   
             $dataprojection=explode(":", $params['projection']); 
 
-             die(print_r($dataprojection,TRUE));         
+            if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
+            if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';
+
+             
           }
-          
+          die(print_r($dataprojection));
           // Richiesta $or:
           if(preg_match('/(or:){1}/',$params['where']))
           {
