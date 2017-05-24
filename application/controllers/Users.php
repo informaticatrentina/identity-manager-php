@@ -250,8 +250,9 @@ class Users extends REST_Controller
             $params['projection'] = str_replace('\x22', '', $params['projection']);
             $params['projection'] = str_replace('{', '', $params['projection']); 
             $params['projection'] = str_replace('}', '', $params['projection']);   
+            $dataprojection=explode(":", $params['projection']); 
 
-             die(print_r($params['projection']));         
+             die(print_r($dataprojection,TRUE));         
           }
           
           // Richiesta $or:
