@@ -304,7 +304,12 @@ class Users extends REST_Controller
                   {
                     $data[$key]['_id']=(string)$value['_id'];
                   }
-                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME']));
+                  if(isset($data[$key]['type']) && isset($data[$key]['_id']))
+                  {
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                    unset($data[$key]['type']);
+                  }
+                    
                     // Elimino Password e ResetPwd
                     unset($data[$key]['password']);
                     unset($data[$key]['resetpwd']);          
