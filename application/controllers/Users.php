@@ -310,9 +310,9 @@ class Users extends REST_Controller
                     unset($data[$key]['type']);
                   }
                     
-                    // Elimino Password e ResetPwd
-                    unset($data[$key]['password']);
-                    unset($data[$key]['resetpwd']);          
+                  // Elimino Password e ResetPwd
+                  unset($data[$key]['password']);
+                  unset($data[$key]['resetpwd']);          
                 }
                 
                 // Count data
@@ -320,7 +320,7 @@ class Users extends REST_Controller
                 
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'));
                 $data['_links']=array('_meta' => array('max_results' => 25, 'total' => $count, 'page' => 1));
-	}
+
               }                   
               $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
               return;       
