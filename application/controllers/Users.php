@@ -38,7 +38,8 @@ class Users extends REST_Controller
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Fuck!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {              
+        {
+          file_put_contents('debug.log','DEBUG1',FILE_APPEND);
           if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
             $dataprojection=NULL;
@@ -102,8 +103,7 @@ class Users extends REST_Controller
                 $count=count($data);
                 
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
-                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-                file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);                
                 return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
@@ -275,8 +275,8 @@ class Users extends REST_Controller
           else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);          
         }
         else
-        {           
-
+        {
+          file_put_contents('debug.log','DEBUG2',FILE_APPEND);
           $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
           if(isset($params['where']) && is_string($params['where']))
