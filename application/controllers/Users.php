@@ -39,10 +39,10 @@ class Users extends REST_Controller
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Fuck!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {    
-          file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
+        {              
           if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
+            file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
             $dataprojection=NULL;
            
             if(isset($params['projection']) && !empty($params['projection']))
@@ -58,7 +58,20 @@ class Users extends REST_Controller
               if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
             }
            
-            
+            if(isset($where_string['$or'][0]['_id']))
+            {
+              foreach($where_string['$or'] as $val)
+              {
+                file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND);
+                //$where_conditions[]=new MongoId($val);                      
+              }
+            }
+
+            if(isset($where_string['$or'][0]['email']))
+            {
+              
+            }
+            /*
            
                 if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
                 {
@@ -106,7 +119,7 @@ class Users extends REST_Controller
 
 
 
-
+*/
 
 
 
