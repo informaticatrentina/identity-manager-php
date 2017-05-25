@@ -43,13 +43,13 @@ class Users extends REST_Controller
           if(isset($where_string['$or']))
           {
             $dataprojection=NULL;
-            file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
-            if(isset($params['projection']))
+           
+            if(isset($params['projection']) && !empty($params['projection']))
             { 
-              /*  
-              $params['projection'] = str_replace('\x22', '', $params['projection']);
               $params['projection'] = str_replace('{', '', $params['projection']); 
-              $params['projection'] = str_replace('}', '', $params['projection']);   */
+              $params['projection'] = str_replace('}', '', $params['projection']);
+              $params['projection'] = str_replace('"', '', $params['projection']);
+              file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
             //$dataprojection=explode(":", $params['projection']); 
 
 //              if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
