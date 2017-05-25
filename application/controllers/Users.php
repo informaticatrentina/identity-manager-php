@@ -40,7 +40,7 @@ class Users extends REST_Controller
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
         {    
-          if(isset($where_string['$or']))
+          if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
             $dataprojection=NULL;
            
@@ -49,17 +49,180 @@ class Users extends REST_Controller
               $params['projection'] = str_replace('{', '', $params['projection']); 
               $params['projection'] = str_replace('}', '', $params['projection']);
               $params['projection'] = str_replace('"', '', $params['projection']);
-              file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
-            //$dataprojection=explode(":", $params['projection']); 
+              
+              
+              $dataprojection=explode(":", $params['projection']); 
 
-//              if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
-  //            if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
+              if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
+              if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
+            }
+            file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
+            
+            /*
+            if(preg_match('/(or:){1}/',$params['where']))
+            {
+            $params['where'] = str_replace('$or:', '', $params['where']);    
+            $params['where'] = str_replace('{[', '', $params['where']);                
+            $params['where'] = str_replace(']}', '', $params['where']); 
+            $params['where'] = str_replace('{', '', $params['where']); 
+            $params['where'] = str_replace('}', '', $params['where']);    
+            $params['where'] = str_replace(',', '', $params['where']);   
+
+            // Ricerca tramite _id
+            if(preg_match('/(_id){1}/',$params['where']))
+            {
+              $params['where'] = str_replace('_id', '', $params['where']); 
+              $data=explode(":", $params['where']);              
+              $clean_data=array_filter($data);
+              $final_data=array_values($clean_data);
+
+              $where_conditions=array();
+
+              foreach($final_data as $val)
+              {
+                $where_conditions[]=new MongoId($val);                      
+              }
+
+              if($dataprojection=='email')
+              {
+                file_put_contents('debug.log','ciao',FILE_APPEND);
+                $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+              }
+              else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
+
+              if(!empty($data))
+              {
+                foreach($data as $key => $value)
+                {   
+                  if(isset($value['_created']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                  } 
+                  if(isset($value['_updated']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['_id']))
+                  {
+                    $data[$key]['_id']=(string)$value['_id'];
+                  }
+                  if(isset($data[$key]['type']) && isset($data[$key]['_id']))
+                  {
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                    unset($data[$key]['type']);
+                  }
+                    
+                  // Elimino Password e ResetPwd
+                  unset($data[$key]['password']);
+                  unset($data[$key]['resetpwd']);          
+                }
+                
+                // Count data
+                $count=count($data);
+                
+                $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
+
+              }                   
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;       
             }
 
+            if(preg_match('/(email){1}/',$params['where']))
+            {
+              $params['where'] = str_replace('email', '', $params['where']); 
+              $data=explode(":", $params['where']);              
+              $clean_data=array_filter($data);
+              $final_data=array_values($clean_data);
+
+              $where_conditions=array();
+              foreach($final_data as $val)
+              {
+                $where_conditions[]=$val;                      
+              }
+  
+              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');          
+              
+              if(!empty($data))
+              {
+                foreach($data as $key => $value)
+                {   
+                  if(isset($value['_created']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                  } 
+                  if(isset($value['_updated']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['_id']))
+                  {
+                    $data[$key]['_id']=(string)$value['_id'];
+                  }
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                    // Elimino Password e ResetPwd
+                    unset($data[$key]['password']);
+                    unset($data[$key]['resetpwd']);
+                }
+
+                // Count data
+                $count=count($data);                
+  
+                $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
+              }                   
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;       
+            }      
+
+*/
 
 
-            if(!empty($where_string['$or']))
-            {               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         /*
               if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
               {
                 
@@ -106,9 +269,9 @@ class Users extends REST_Controller
                     return;                	             
 		              }              
                 }
-              }
-              
-            }
+              }      
+              */      
+          
           }
 
           if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
@@ -272,7 +435,7 @@ class Users extends REST_Controller
             if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
             if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
           }
-          file_put_contents('debug.log','FINE',FILE_APPEND);
+
           // Richiesta $or:
           if(preg_match('/(or:){1}/',$params['where']))
           {
