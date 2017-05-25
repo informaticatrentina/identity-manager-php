@@ -69,7 +69,6 @@ class Users extends REST_Controller
                  $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
-              
               if(!empty($data))
               {
                 foreach($data as $key => $value)
@@ -103,9 +102,9 @@ class Users extends REST_Controller
                 $count=count($data);
                 
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
-                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);                
-                $this->response(array('_items' => json_encode($data)), REST_Controller::HTTP_OK);                
-                return;
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1); 
+                file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);        
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
             }
