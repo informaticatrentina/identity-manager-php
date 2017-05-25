@@ -40,9 +40,24 @@ class Users extends REST_Controller
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
         {    
-          file_put_contents('debug.log','O QUI',FILE_APPEND);
           if(isset($where_string['$or']))
           {
+            $dataprojection=NULL;
+            file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
+            if(isset($params['projection']))
+            { 
+              /*  
+              $params['projection'] = str_replace('\x22', '', $params['projection']);
+              $params['projection'] = str_replace('{', '', $params['projection']); 
+              $params['projection'] = str_replace('}', '', $params['projection']);   */
+            //$dataprojection=explode(":", $params['projection']); 
+
+//              if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
+  //            if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
+            }
+
+
+
             if(!empty($where_string['$or']))
             {               
               if(isset($where_string['$or'][0]) && count($where_string['$or'][0]==1))
@@ -239,8 +254,7 @@ class Users extends REST_Controller
         }
         else
         {           
-          file_put_contents('debug.log','SONO QUI',FILE_APPEND);
-          file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
+
           $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
           if(isset($params['where']) && is_string($params['where']))
