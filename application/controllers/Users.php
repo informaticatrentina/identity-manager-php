@@ -341,6 +341,8 @@ class Users extends REST_Controller
                 $where_conditions[]=$val;                      
               }
 
+              file_put_contents('debug.log','ci sono',FILE_APPEND);
+              file_put_contents('debug.log',print_r($dataprojection,TRUE),FILE_APPEND);
               if($dataprojection=='email')
               {
                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');            
