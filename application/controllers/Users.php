@@ -58,6 +58,7 @@ class Users extends REST_Controller
            
             if(isset($where_string['$or'][0]['_id']))
             {
+               file_put_contents('debug.log','DEBUG2',FILE_APPEND);
               $where_conditions=array();
               foreach($where_string['$or'] as $val)
               {                
@@ -111,6 +112,7 @@ class Users extends REST_Controller
 
             if(isset($where_string['$or'][0]['email']))
             {
+              file_put_contents('debug.log','DEBUG3',FILE_APPEND);
               $where_conditions=array();
               foreach($where_string['$or'] as $val)
               {                
@@ -151,11 +153,11 @@ class Users extends REST_Controller
                 return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);        
-            }          
+            }   
+            file_put_contents('debug.log','DEBUGxxx',FILE_APPEND);       
           }
           elseif(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
-          {
-            file_put_contents('debug.log','DEBUG2',FILE_APPEND);
+          {            
             $email=urldecode($where_string['email']);
             $password=urldecode($where_string['password']);
           
@@ -213,8 +215,7 @@ class Users extends REST_Controller
             }
           }    
           elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
-          {
-            file_put_contents('debug.log','DEBUG3',FILE_APPEND);
+          {            
             $email=urldecode($where_string['email']);   
   
             $data=$this->mongo_db->where(array('email' => $email))->get('users');
@@ -231,8 +232,7 @@ class Users extends REST_Controller
             }
           }
           elseif(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))          // Verifico _id
-          {
-            file_put_contents('debug.log','DEBUG4',FILE_APPEND);
+          {           
             try
             {
               $mongo_user_id = new MongoId($where_string['_id']);
@@ -259,8 +259,7 @@ class Users extends REST_Controller
             }
           }        
           elseif(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname'])) // Verifico Nickname
-          {
-            file_put_contents('debug.log','DEBUG5',FILE_APPEND);
+          {            
             $nickname=urldecode($where_string['nickname']);
            
             $data=$this->mongo_db->where(array('nickname' => $nickname))->get('users');
@@ -277,8 +276,7 @@ class Users extends REST_Controller
             }          
           }
           else
-          {
-            file_put_contents('debug.log','DEBUG6',FILE_APPEND);
+          {            
             return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                       
           }
         }
