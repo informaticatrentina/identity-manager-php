@@ -80,7 +80,7 @@ class Users extends REST_Controller
                         {
                           $data[$key]['_id']=(string)$value['_id'];
                         }
-                          $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => 'www.google.it'));
+                          $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
                         // Elimino Password e ResetPwd
                         unset($data[$key]['password']);
                         unset($data[$key]['resetpwd']);
@@ -276,10 +276,12 @@ class Users extends REST_Controller
               $final_data=array_values($clean_data);
 
               $where_conditions=array();
+              
               foreach($final_data as $val)
               {
                 $where_conditions[]=new MongoId($val);                      
               }
+
               if($dataprojection=='email')
               {
                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
@@ -358,7 +360,7 @@ class Users extends REST_Controller
                   {
                     $data[$key]['_id']=(string)$value['_id'];
                   }
-                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => 'www.google.it'));
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
                     // Elimino Password e ResetPwd
                     unset($data[$key]['password']);
                     unset($data[$key]['resetpwd']);
