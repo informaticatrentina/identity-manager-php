@@ -30,8 +30,7 @@ class Users extends REST_Controller
 
     // Verifica password
     if(!empty($params) && $user_id==NULL)
-    {     
-     
+    {          
       if(isset($params['where']) && !empty($params['where']))
       {
         $where_string = json_decode($params['where'],TRUE);
@@ -105,10 +104,9 @@ class Users extends REST_Controller
                 
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-
-              }                   
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              }
+              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
             }
 
             if(isset($where_string['$or'][0]['email']))
@@ -150,63 +148,10 @@ class Users extends REST_Controller
   
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-              }                   
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;           
-            }
-            /*
-           
-                if(isset($where_string['$or'][0]['email']) && !empty($where_string['$or'][0]['email']))
-                {
-                  return $this->_checkEmail($where_string['$or'][0]['email']);
-                }
-                else
-                {
-                  if (is_array($where_string['$or']) && count($where_string['$or']) > 0)
-		              {
-                    $where_conditions=array();
-                    foreach($where_string['$or'] as $val)
-                    {
-                      if(isset($val['_id'])) $where_conditions[]=new MongoId($val['_id']);                      
-                    }
-
-                    $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');            
-                    if(!empty($data))
-                    {
-                      foreach($data as $key => $value)
-                      {   
-                        if(isset($value['_created']))
-                        {                                                               
-                          date_default_timezone_set('Europe/Rome');                        
-                          $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
-                        } 
-                        if(isset($value['_updated']))
-                        {                                                               
-                          date_default_timezone_set('Europe/Rome');                        
-                          $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
-                        } 
-                        if(isset($value['_id']))
-                        {
-                          $data[$key]['_id']=(string)$value['_id'];
-                        }
-                          $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
-                        // Elimino Password e ResetPwd
-                        unset($data[$key]['password']);
-                        unset($data[$key]['resetpwd']);
-                      }
-                    }                   
-                    $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-                    return;                	             
-		              }              
-                }
-
-
-
-*/
-
-
-
-          
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              }
+              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);        
+            }          
           }
 
           if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
@@ -437,9 +382,9 @@ class Users extends REST_Controller
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
 
-              }                   
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;       
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              }
+              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);      
             }
 
             if(preg_match('/(email){1}/',$params['where']))
@@ -486,9 +431,9 @@ class Users extends REST_Controller
   
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-              }                   
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;       
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              }
+              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);    
             }          
 
           }
