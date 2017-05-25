@@ -38,10 +38,10 @@ class Users extends REST_Controller
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Fuck!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {
-          file_put_contents('debug.log','DEBUG1',FILE_APPEND);
+        {          
           if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
+            file_put_contents('debug.log','DEBUG1',FILE_APPEND);
             $dataprojection=NULL;
            
             if(isset($params['projection']) && !empty($params['projection']))
@@ -155,6 +155,7 @@ class Users extends REST_Controller
           }
           elseif(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {
+            file_put_contents('debug.log','DEBUG2',FILE_APPEND);
             $email=urldecode($where_string['email']);
             $password=urldecode($where_string['password']);
           
@@ -213,6 +214,7 @@ class Users extends REST_Controller
           }    
           elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
           {
+            file_put_contents('debug.log','DEBUG3',FILE_APPEND);
             $email=urldecode($where_string['email']);   
   
             $data=$this->mongo_db->where(array('email' => $email))->get('users');
@@ -230,6 +232,7 @@ class Users extends REST_Controller
           }
           elseif(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))          // Verifico _id
           {
+            file_put_contents('debug.log','DEBUG4',FILE_APPEND);
             try
             {
               $mongo_user_id = new MongoId($where_string['_id']);
@@ -257,6 +260,7 @@ class Users extends REST_Controller
           }        
           elseif(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname'])) // Verifico Nickname
           {
+            file_put_contents('debug.log','DEBUG5',FILE_APPEND);
             $nickname=urldecode($where_string['nickname']);
            
             $data=$this->mongo_db->where(array('nickname' => $nickname))->get('users');
@@ -272,11 +276,14 @@ class Users extends REST_Controller
               return $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK);               
             }          
           }
-          else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);          
+          else
+          {
+            file_put_contents('debug.log','DEBUG6',FILE_APPEND);
+            return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                       
+          }
         }
         else
-        {
-          file_put_contents('debug.log','DEBUG2',FILE_APPEND);
+        {         
           $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
           if(isset($params['where']) && is_string($params['where']))
