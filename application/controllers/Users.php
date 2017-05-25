@@ -276,7 +276,7 @@ class Users extends REST_Controller
               $final_data=array_values($clean_data);
 
               $where_conditions=array();
-              
+
               foreach($final_data as $val)
               {
                 $where_conditions[]=new MongoId($val);                      
@@ -317,11 +317,14 @@ class Users extends REST_Controller
                   unset($data[$key]['resetpwd']);          
                 }
                 
+                file_put_contents('debug.log','debug1',FILE_APPEND);
                 // Count data
                 $count=count($data);
                 
+                file_put_contents('debug.log','debug2',FILE_APPEND);
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
+                file_put_contents('debug.log','debug3',FILE_APPEND);
 
               }                   
               $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
