@@ -245,9 +245,7 @@ class Users extends REST_Controller
           {   
             $params['where'] = str_replace('\x22', '', $params['where']);            
           }
-
-          file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
-
+          
           if(isset($params['projection']) && is_string($params['projection']))
           {   
             $params['projection'] = str_replace('\x22', '', $params['projection']);
@@ -284,7 +282,11 @@ class Users extends REST_Controller
                 $where_conditions[]=new MongoId($val);                      
               }
 
-              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+              if($dataprojection=='email')
+              {
+                $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+              }
+              else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
 
               if(!empty($data))
               {
@@ -338,12 +340,8 @@ class Users extends REST_Controller
               {
                 $where_conditions[]=$val;                      
               }
-
-              if($dataprojection=='email')
-              {
-                $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');            
-              }
-              else $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');               
+  
+              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');          
               
               if(!empty($data))
               {
