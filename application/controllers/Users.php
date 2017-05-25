@@ -238,14 +238,14 @@ class Users extends REST_Controller
         }
         else
         {           
-         
+          file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
           $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
           if(isset($params['where']) && is_string($params['where']))
           {   
             $params['where'] = str_replace('\x22', '', $params['where']);            
           }
-          
+
           if(isset($params['projection']) && is_string($params['projection']))
           {   
             $params['projection'] = str_replace('\x22', '', $params['projection']);
@@ -256,7 +256,7 @@ class Users extends REST_Controller
             if(isset($dataprojection[0]) && $dataprojection[0]=='email') $dataprojection='email';
             if(isset($dataprojection[0]) && $dataprojection[0]=='_id') $dataprojection='_id';             
           }
-
+          file_put_contents('debug.log','FINE',FILE_APPEND);
           // Richiesta $or:
           if(preg_match('/(or:){1}/',$params['where']))
           {
@@ -284,6 +284,7 @@ class Users extends REST_Controller
 
               if($dataprojection=='email')
               {
+                file_put_contents('debug.log','ciao',FILE_APPEND);
                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
