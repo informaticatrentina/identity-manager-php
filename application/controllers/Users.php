@@ -238,6 +238,7 @@ class Users extends REST_Controller
         }
         else
         {           
+          file_put_contents('debug.log','SONO QUI',FILE_APPEND);
           file_put_contents('debug.log',print_r($params,TRUE),FILE_APPEND);
           $dataprojection=NULL;
           // Remove Refuso modulo Python char \x22
