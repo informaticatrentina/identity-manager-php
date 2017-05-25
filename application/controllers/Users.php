@@ -40,6 +40,7 @@ class Users extends REST_Controller
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
         {    
+          file_put_contents('debug.log','O QUI',FILE_APPEND);
           if(isset($where_string['$or']))
           {
             if(!empty($where_string['$or']))
