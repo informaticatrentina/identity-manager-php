@@ -42,7 +42,6 @@ class Users extends REST_Controller
         {              
           if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
-            file_put_contents('debug.log',print_r($where_string['$or'],TRUE),FILE_APPEND);
             $dataprojection=NULL;
            
             if(isset($params['projection']) && !empty($params['projection']))
