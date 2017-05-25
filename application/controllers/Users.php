@@ -47,8 +47,7 @@ class Users extends REST_Controller
             { 
               $params['projection'] = str_replace('{', '', $params['projection']); 
               $params['projection'] = str_replace('}', '', $params['projection']);
-              $params['projection'] = str_replace('"', '', $params['projection']);
-              
+              $params['projection'] = str_replace('"', '', $params['projection']);             
               
               $dataprojection=explode(":", $params['projection']); 
 
@@ -105,6 +104,7 @@ class Users extends REST_Controller
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
                 return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
             }
@@ -148,13 +148,12 @@ class Users extends REST_Controller
   
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);        
             }          
           }
-
-          if(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
+          elseif(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {
             $email=urldecode($where_string['email']);
             $password=urldecode($where_string['password']);
@@ -163,8 +162,7 @@ class Users extends REST_Controller
    
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-              return;
+              return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);              
             }
             else
             {              
@@ -180,8 +178,7 @@ class Users extends REST_Controller
                   $data[0]['_id']=(string)$data[0]['_id'];
                   // Non trasmetto la password
                   unset($data[0]['password']);              
-                  $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-                  return;
+                  return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                  
                 }
                 else
                 {                  
@@ -189,8 +186,7 @@ class Users extends REST_Controller
                   // Se la password è già stata resettata -> ERRORE
                   if(isset($data[0]['resetpwd']) && $data[0]['resetpwd']==1) 
                   {
-                    $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-                    return;
+                    return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                    
                   }
                   else
                   {
@@ -205,21 +201,17 @@ class Users extends REST_Controller
                     $data[0]['_id']=(string)$data[0]['_id'];
                     // Non trasmetto la password
                     unset($data[0]['password']);              
-                    $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-                    return;
+                    return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                    
                   }                  
                 }
               }
               else  
               {
-                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-                return;
+                return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                
               }
             }
           }    
-          
-                  // Verifico Username
-          if(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))
+          elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
           {
             $email=urldecode($where_string['email']);   
   
@@ -227,20 +219,16 @@ class Users extends REST_Controller
           
             if(empty($data))
             {
-             $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-             return;
+              return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);            
             }
             else
             {            
               if(isset($data[0]['password'])) unset($data[0]['password']);
               if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;
+              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);              
             }
           }
-          
-          // Verifico _id
-          if(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))
+          elseif(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))          // Verifico _id
           {
             try
             {
@@ -248,17 +236,14 @@ class Users extends REST_Controller
             }
             catch (MongoException $ex)
             {
-              $this->response(array('response' => 'ERR', 'message' => 'Utente ID non valido.'), REST_Controller::HTTP_OK);
-              return;
+              return $this->response(array('response' => 'ERR', 'message' => 'Utente ID non valido.'), REST_Controller::HTTP_OK);
+              
             }
-
             $data=$this->mongo_db->where(array('_id' => $mongo_user_id))->get('users');
-
 
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', '_items' => $mongo_user_id), REST_Controller::HTTP_OK);
-              return;
+              return $this->response(array('response' => 'ERR', '_items' => $mongo_user_id), REST_Controller::HTTP_OK);              
             }
             else
             {
@@ -267,13 +252,10 @@ class Users extends REST_Controller
               // Non trasmetto la password
               unset($data[0]['password']);
               $response_arr=$data[0];
-              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
-              return;
+              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);              
             }
           }        
-        
-          // Verifico Nickname
-          if(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname']))
+          elseif(!empty($where_string) && isset($where_string['nickname']) && !empty($where_string['nickname'])) // Verifico Nickname
           {
             $nickname=urldecode($where_string['nickname']);
            
@@ -281,19 +263,16 @@ class Users extends REST_Controller
           
             if(empty($data))
             {
-              $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-              return;
+             return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);              
             }
             else
             {                
               // Converto il campo _id in string            
               $data[0]['_id']=(string)$data[0]['_id'];
-              $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK); 
-              return;
+              return $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK);               
             }          
           }
-          $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);
-          return;         
+          else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);          
         }
         else
         {           
