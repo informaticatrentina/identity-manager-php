@@ -60,16 +60,100 @@ class Users extends REST_Controller
            
             if(isset($where_string['$or'][0]['_id']))
             {
+              $where_conditions=array();
               foreach($where_string['$or'] as $val)
-              {
-                file_put_contents('debug.log',print_r($val,TRUE),FILE_APPEND);
-                //$where_conditions[]=new MongoId($val);                      
+              {                
+                if(isset($val['_id'])) $where_conditions[]=new MongoId($val['_id']);                
               }
+
+              if($dataprojection=='email')
+              {
+                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+              }
+              else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
+
+              if(!empty($data))
+              {
+                foreach($data as $key => $value)
+                {   
+                  if(isset($value['_created']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                  } 
+                  if(isset($value['_updated']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['_id']))
+                  {
+                    $data[$key]['_id']=(string)$value['_id'];
+                  }
+                  if(isset($data[$key]['type']) && isset($data[$key]['_id']))
+                  {
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                    unset($data[$key]['type']);
+                  }
+                    
+                  // Elimino Password e ResetPwd
+                  unset($data[$key]['password']);
+                  unset($data[$key]['resetpwd']);          
+                }
+                
+                // Count data
+                $count=count($data);
+                
+                $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
+
+              }                   
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;
             }
 
             if(isset($where_string['$or'][0]['email']))
             {
+              $where_conditions=array();
+              foreach($where_string['$or'] as $val)
+              {                
+                if(isset($val['email'])) $where_conditions[]=$val['email'];                
+              }
+  
+              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');          
               
+              if(!empty($data))
+              {
+                foreach($data as $key => $value)
+                {   
+                  if(isset($value['_created']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+                  } 
+                  if(isset($value['_updated']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['_id']))
+                  {
+                    $data[$key]['_id']=(string)$value['_id'];
+                  }
+                    $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                    // Elimino Password e ResetPwd
+                    unset($data[$key]['password']);
+                    unset($data[$key]['resetpwd']);
+                }
+
+                // Count data
+                $count=count($data);                
+  
+                $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
+              }                   
+              $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+              return;           
             }
             /*
            
@@ -315,8 +399,7 @@ class Users extends REST_Controller
 
               if($dataprojection=='email')
               {
-                file_put_contents('debug.log','ciao',FILE_APPEND);
-                $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
 
