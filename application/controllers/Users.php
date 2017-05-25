@@ -69,7 +69,7 @@ class Users extends REST_Controller
                  $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
-
+              file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);
               if(!empty($data))
               {
                 foreach($data as $key => $value)
