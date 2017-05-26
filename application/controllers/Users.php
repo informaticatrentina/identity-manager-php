@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . '/libraries/REST_Controller.php';
 
-//use Restserver\Libraries\REST_Controller;
-
 require APPPATH . '/third_party/vendor/autoload.php';
 
 
@@ -57,7 +55,6 @@ class Users extends REST_Controller
            
             if(isset($where_string['$or'][0]['_id']))
             {
-               file_put_contents('debug.log','DEBUG2',FILE_APPEND);
               $where_conditions=array();
               foreach($where_string['$or'] as $val)
               {                
@@ -152,8 +149,7 @@ class Users extends REST_Controller
                 return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);        
-            }   
-            file_put_contents('debug.log','DEBUGxxx',FILE_APPEND);       
+            }
           }
           elseif(!empty($where_string) && isset($where_string['email']) && isset($where_string['password']) && !empty($where_string['email']) && !empty($where_string['password']))
           {            
