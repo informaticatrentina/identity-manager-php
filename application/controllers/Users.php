@@ -97,7 +97,7 @@ class Users extends REST_Controller
                 $count=count($data);
                 
                 //$data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
-                $data['_meta']=json_encode(array('max_results' => '25', 'total' => '0', 'page' => '1')); 
+                $data[]=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
                 return;
