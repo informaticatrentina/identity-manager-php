@@ -97,12 +97,12 @@ class Users extends REST_Controller
                 $count=count($data);
                 
                 //$data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
-                $data[]=array('max_results' => 25, 'total' => $count, 'page' => 1); 
+                //$data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
                 return;
               }
-              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
+              else return $this->response(array('response' => 'ERR', '_items' => array(), '_meta' => array('max_results' => 25, 'total' => $count, 'page' => 1)), REST_Controller::HTTP_OK);             
             }
 
             if(isset($where_string['$or'][0]['email']))
