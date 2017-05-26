@@ -1,9 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-require APPPATH . '/libraries/REST_Controller.php';
-
 require APPPATH . '/third_party/vendor/autoload.php';
-
+require APPPATH . '/libraries/REST_Controller.php';
 
 /**
  * Api
