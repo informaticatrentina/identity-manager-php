@@ -359,7 +359,7 @@ class Users extends REST_Controller
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
 
-                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                return $this->response(json_encode(array('_items' => $data)), REST_Controller::HTTP_OK);
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);      
             }
