@@ -95,7 +95,7 @@ class Users extends REST_Controller
                 
                 // Count data
                 $count=count($data);                
-                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $meta=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 return $this->response(array('_items' => $data, '_links' => $links, '_meta' => $meta), REST_Controller::HTTP_OK);                
@@ -139,7 +139,7 @@ class Users extends REST_Controller
                 
                 // Count data
                 $count=count($data);                
-                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $meta=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 return $this->response(array('_items' => $data, '_links' => $links, '_meta' => $meta), REST_Controller::HTTP_OK);                
@@ -353,7 +353,7 @@ class Users extends REST_Controller
                 
                 // Count data
                 $count=count($data);                
-                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $meta=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 return $this->response(array('_items' => $data, '_links' => $links, '_meta' => $meta), REST_Controller::HTTP_OK);                
@@ -402,7 +402,7 @@ class Users extends REST_Controller
 
                 // Count data
                 $count=count($data);                
-                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $meta=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
                 return $this->response(array('_items' => $data, '_links' => $links, '_meta' => $meta), REST_Controller::HTTP_OK);                
