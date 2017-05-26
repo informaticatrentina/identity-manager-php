@@ -94,15 +94,13 @@ class Users extends REST_Controller
                 }
                 
                 // Count data
-                $count=count($data);
+                $count=count($data);                
+                $links=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
+                $meta=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 
-                //$data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
-                //$data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1); 
-                
-                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
-                return;
+                return $this->response(array('_items' => $data, '_links' => $links, '_meta' => $meta), REST_Controller::HTTP_OK);                
               }
-              else return $this->response(array('response' => 'ERR', '_items' => array(), '_meta' => array('max_results' => 25, 'total' => $count, 'page' => 1)), REST_Controller::HTTP_OK);             
+              else return $this->response(array('response' => 'ERR', '_items' => array(), '_meta' => array(), '_links' => array()), REST_Controller::HTTP_OK);             
             }
 
             if(isset($where_string['$or'][0]['email']))
