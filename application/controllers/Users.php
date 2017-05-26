@@ -99,7 +99,8 @@ class Users extends REST_Controller
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1); 
                 file_put_contents('debug.log',print_r($data,TRUE),FILE_APPEND);        
-                return $this->response(json_encode(array('_items' => $data)), REST_Controller::HTTP_OK);                
+                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
+                return;
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);             
             }
@@ -144,7 +145,8 @@ class Users extends REST_Controller
   
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
+                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);                
+                return;
               }
               else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);        
             }
@@ -358,10 +360,14 @@ class Users extends REST_Controller
                 
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-
-                return $this->response(json_encode(array('_items' => $data)), REST_Controller::HTTP_OK);
+                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                return;
               }
-              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);      
+              else
+              {
+                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);      
+                return;
+              }
             }
 
             if(preg_match('/(email){1}/',$params['where']))
@@ -408,9 +414,14 @@ class Users extends REST_Controller
   
                 $data['_links']=array('self' => array('title' => 'users', 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'), 'parent' => array('href' => $_SERVER['SERVER_NAME'].'/v1', 'title' => 'home'));
                 $data['_meta']=array('max_results' => 25, 'total' => $count, 'page' => 1);
-                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                $this->response(array('_items' => $data), REST_Controller::HTTP_OK);
+                return;
               }
-              else return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);    
+              else
+              {
+                $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);    
+                return;
+              } 
             }          
 
           }
