@@ -61,7 +61,7 @@ class Users extends REST_Controller
 
               if($dataprojection=='email')
               {
-                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+                 $data=$this->mongo_db->select(array('_updated','_created','_id','email','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
               if(!empty($data))
@@ -111,7 +111,7 @@ class Users extends REST_Controller
                 if(isset($val['email'])) $where_conditions[]=$val['email'];                
               }
   
-              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');          
+              $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');
               
               if(!empty($data))
               {
@@ -318,7 +318,7 @@ class Users extends REST_Controller
 
               if($dataprojection=='email')
               {
-                 $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('_id', $where_conditions)->get('users');            
+                 $data=$this->mongo_db->select(array('_updated','_created','_id','email','type'))->where_in('_id', $where_conditions)->get('users');            
               }
               else $data=$this->mongo_db->where_in('_id', $where_conditions)->get('users');    
 
@@ -374,7 +374,7 @@ class Users extends REST_Controller
                 $where_conditions[]=$val;                      
               }
   
-              $data=$this->mongo_db->select(array('_id','email','_created','_updated','type'))->where_in('email', $where_conditions)->get('users');          
+              $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');        
               
               if(!empty($data))
               {
