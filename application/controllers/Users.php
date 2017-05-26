@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . '/libraries/REST_Controller.php';
 
-use Restserver\Libraries\REST_Controller;
+//use Restserver\Libraries\REST_Controller;
 
 require APPPATH . '/third_party/vendor/autoload.php';
 
