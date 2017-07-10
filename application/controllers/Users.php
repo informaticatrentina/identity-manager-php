@@ -266,6 +266,20 @@ class Users extends REST_Controller
               return $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK);               
             }          
           }
+          elseif(!empty($where_string) && isset($where_string['source']) && !empty($where_string['source'])) // Verifico Source
+          {
+            $source=urldecode($where_string['source']);
+            $data=$this->mongo_db->where(array('source' => $source))->get('users');
+
+            if(empty($data))
+            {
+              return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);              
+            }
+            else
+            {
+                return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);            
+            }     
+          }
           else
           {            
             return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                       
