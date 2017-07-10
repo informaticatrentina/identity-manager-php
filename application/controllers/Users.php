@@ -271,12 +271,39 @@ class Users extends REST_Controller
             $source=urldecode($where_string['source']);
             $data=$this->mongo_db->where(array('source' => $source))->get('users');
 
+            foreach($data as $key => $value)
+            {   
+              if(isset($value['_created']))
+              {                                                               
+                date_default_timezone_set('Europe/Rome');                        
+                $data[$key]['_created']=date('Y-m-d H:i:s',$value['_created']->sec);
+              } 
+              if(isset($value['_updated']))
+              {                                                               
+                date_default_timezone_set('Europe/Rome');                        
+                $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+              } 
+              if(isset($value['_id']))
+              {
+                $data[$key]['_id']=(string)$value['_id'];
+              }
+              if(isset($data[$key]['type']) && isset($data[$key]['_id']))
+              {
+                $data[$key]['_links']=array('self' => array('title' => $data[$key]['type'], 'href' => $_SERVER['SERVER_NAME'].'/v1/users/'.$data[$key]['_id']));
+                unset($data[$key]['type']);
+              }
+                    
+              // Elimino Password e ResetPwd
+              unset($data[$key]['password']);
+              unset($data[$key]['resetpwd']);          
+            }
+
             if(empty($data))
             {
               return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);              
             }
             else
-            {
+            {                
                 return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);            
             }     
           }
