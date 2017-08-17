@@ -589,8 +589,7 @@ class Users extends REST_Controller
     }
     else // Ottengo i dati dell'utente
     {
-      $this->response(array('response' => 'DEBUG', '_items' => 'SONO QUI'), REST_Controller::HTTP_OK);
-      return;
+  
       try 
       {
         $mongo_user_id = new MongoId($user_id);
