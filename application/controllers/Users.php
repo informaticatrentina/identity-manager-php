@@ -714,8 +714,7 @@ class Users extends REST_Controller
       if(isset($post_data['status'])) $data['status']=(string) $post_data['status'];
       if(isset($post_data['mobile']) && !empty($post_data['mobile'])) $data['mobile']=$post_data['mobile'];
       if(isset($post_data['nickname']) && !empty($post_data['nickname'])) $data['nickname']=trim(xss_clean($post_data['nickname']));
-      if(isset($post_data['site-user-info']) && !empty($post_data['site-user-info'])) $data['site-user-info']=$post_data['site-user-info'];
-      
+    
       if(isset($post_data['profile-info']) && !empty($post_data['profile-info'])) $data['profile-info']=$post_data['profile-info'];
       
       if($post_data['type']=='org')
