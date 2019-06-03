@@ -78,6 +78,16 @@ class Users extends REST_Controller
                     date_default_timezone_set('Europe/Rome');                        
                     $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
                   } 
+                  if(isset($value['gdpr_date']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date']=date('Y-m-d H:i:s',$value['gdpr_date']->sec);  
+                  } 
+                  if(isset($value['gdpr_date_del']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date_del']=date('Y-m-d H:i:s',$value['gdpr_date_del']->sec);  
+                  } 
                   if(isset($value['_id']))
                   {
                     $data[$key]['_id']=(string)$value['_id'];
@@ -283,6 +293,16 @@ class Users extends REST_Controller
                 date_default_timezone_set('Europe/Rome');                        
                 $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
               } 
+              if(isset($value['gdpr_date']))
+              {                                                               
+                date_default_timezone_set('Europe/Rome');                        
+                $data[$key]['gdpr_date']=date('Y-m-d H:i:s',$value['gdpr_date']->sec);  
+              } 
+              if(isset($value['gdpr_date_del']))
+              {                                                               
+                date_default_timezone_set('Europe/Rome');                        
+                $data[$key]['gdpr_date_del']=date('Y-m-d H:i:s',$value['gdpr_date_del']->sec);  
+              } 
               if(isset($value['_id']))
               {
                 $data[$key]['_id']=(string)$value['_id'];
@@ -377,6 +397,16 @@ class Users extends REST_Controller
                     date_default_timezone_set('Europe/Rome');                        
                     $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
                   } 
+                  if(isset($value['gdpr_date']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date']=date('Y-m-d H:i:s',$value['gdpr_date']->sec);  
+                  } 
+                  if(isset($value['gdpr_date_del']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date_del']=date('Y-m-d H:i:s',$value['gdpr_date_del']->sec);  
+                  } 
                   if(isset($value['_id']))
                   {
                     $data[$key]['_id']=(string)$value['_id'];
@@ -430,6 +460,16 @@ class Users extends REST_Controller
                   {                                                               
                     date_default_timezone_set('Europe/Rome');                        
                     $data[$key]['_updated']=date('Y-m-d H:i:s',$value['_updated']->sec);  
+                  } 
+                  if(isset($value['gdpr_date']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date']=date('Y-m-d H:i:s',$value['gdpr_date']->sec);  
+                  } 
+                  if(isset($value['gdpr_date_del']))
+                  {                                                               
+                    date_default_timezone_set('Europe/Rome');                        
+                    $data[$key]['gdpr_date_del']=date('Y-m-d H:i:s',$value['gdpr_date_del']->sec);  
                   } 
                   if(isset($value['_id']))
                   {
@@ -639,6 +679,9 @@ class Users extends REST_Controller
     if(isset($patch_data['location']) && !empty($patch_data['location'])) $data['location']=$patch_data['location'];
     if(isset($patch_data['website']) && !empty($patch_data['website'])) $data['website']=$patch_data['website'];
     if(isset($patch_data['status'])) $data['status']=$patch_data['status'];    
+    if(isset($patch_data['gdpr'])) $data['gdpr']=$patch_data['gdpr'];    
+    if(isset($patch_data['gdpr_date'])) $data['gdpr_date']=new MongoDate(strtotime($patch_data['gdpr_date']));
+    if(isset($patch_data['gdpr_date_del'])) $data['gdpr_date_del']=new MongoDate(strtotime($patch_data['gdpr_date_del']));
     if(isset($patch_data['biography']) && !empty($patch_data['biography'])) $data['biography']=$patch_data['biography'];    
     if(isset($patch_data['mobile']) && !empty($patch_data['mobile'])) $data['mobile']=$patch_data['mobile'];
     if(isset($patch_data['site-last-login']) && !empty($patch_data['site-last-login'])) $data['site-last-login']=$patch_data['site-last-login']; 
@@ -714,8 +757,12 @@ class Users extends REST_Controller
       if(isset($post_data['status'])) $data['status']=(string) $post_data['status'];
       if(isset($post_data['mobile']) && !empty($post_data['mobile'])) $data['mobile']=$post_data['mobile'];
       if(isset($post_data['nickname']) && !empty($post_data['nickname'])) $data['nickname']=trim(xss_clean($post_data['nickname']));
-    
+      if(isset($post_data['site-user-info']) && !empty($post_data['site-user-info'])) $data['site-user-info']=$post_data['site-user-info'];
       if(isset($post_data['profile-info']) && !empty($post_data['profile-info'])) $data['profile-info']=$post_data['profile-info'];
+
+      if(isset($post_data['gdpr'])) $data['gdpr']=$post_data['gdpr'];    
+      if(isset($post_data['gdpr_date'])) $data['gdpr_date']=new MongoDate(strtotime($post_data['gdpr_date']));
+      if(isset($post_data['gdpr_date_del'])) $data['gdpr_date_del']=new MongoDate(strtotime($post_data['gdpr_date_del']));
       
       if($post_data['type']=='org')
       {
