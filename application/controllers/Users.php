@@ -721,7 +721,7 @@ class Users extends REST_Controller
     {
       $email=xss_clean($post_data['email']);
       
-      $data=$this->mongo_db->where(array('email' => $email))->get('users');     
+      $data=$this->mongo_db->where(array('email' => $email, 'status' => 1))->get('users');     
           
       if(!empty($data))
       {
