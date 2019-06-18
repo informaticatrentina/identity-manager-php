@@ -23,18 +23,17 @@ class Users extends REST_Controller
   public function index_get($user_id=null)
   {    
     $params=$this->get();
-
     // Verifica password
     if(!empty($params) && $user_id==NULL)
-    {          
+    {
       if(isset($params['where']) && !empty($params['where']))
       {
-        $where_string = json_decode($params['where'],TRUE);
+        $where_string = json_decode($params['where'],TRUE);   
 
         // Il Profile Manager gestische il tutto con array Json mentre le istanze tramite stringa GET - Fuck!
         // é un array json 
         if(json_last_error() == JSON_ERROR_NONE)
-        {          
+        {       
           if(isset($where_string['$or']) && !empty($where_string['$or']))
           {
             $dataprojection=NULL;
@@ -112,17 +111,34 @@ class Users extends REST_Controller
               }
               else return $this->response(array('response' => 'ERR', '_items' => array(), '_meta' => array(), '_links' => array()), REST_Controller::HTTP_OK);             
             }
-
+            
             if(isset($where_string['$or'][0]['email']))
-            {
-              $where_conditions=array();
-              foreach($where_string['$or'] as $val)
-              {                
-                if(isset($val['email'])) $where_conditions[]=$val['email'];                
+            {          
+              // Verifico controllo email iosostengo
+              if(count($where_string['$or'])==1)
+              {
+                if(isset($where_string['$or'][0]['email']) && isset($where_string['$or'][0]['status']))
+                {
+                  
+                  $data=$this->mongo_db->where('email', $where_string['$or'][0]['email'])->where('status', (string)$where_string['$or'][0]['status'])->get('users');                  
+                }
+
+                // Nel caso di attivazione di un account registrato dopo che il vecchio è stato disabilitato
+                if(isset($where_string['$or'][0]['email']))
+                {
+                  $data=$this->mongo_db->where('email', $where_string['$or'][0]['email'])->where('gdpr_date_del',NULL)->get('users');                  
+                }  
               }
+              else
+              {
+                $where_conditions=array();
+                foreach($where_string['$or'] as $val)
+                {                
+                  if(isset($val['email'])) $where_conditions[]=$val['email'];                
+                }
+                $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');
+              }      
   
-              $data=$this->mongo_db->where_in('email', $where_conditions)->get('users');
-              
               if(!empty($data))
               {
                 foreach($data as $key => $value)
@@ -162,8 +178,8 @@ class Users extends REST_Controller
             $email=urldecode($where_string['email']);
             $password=urldecode($where_string['password']);
           
-            $data=$this->mongo_db->where(array('email' => $email))->get('users');
-   
+            $data=$this->mongo_db->where(array('email' => $email))->where('gdpr_date_del',NULL)->get('users');
+
             if(empty($data))
             {
               return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);              
@@ -213,6 +229,21 @@ class Users extends REST_Controller
               {
                 return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);                
               }
+            }
+          }
+          elseif(isset($where_string['email']) && isset($where_string['status']) && !empty($where_string['email']) && !empty($where_string['status'])) // Verifico Username e Stato Attivo
+          {
+            $email=urldecode($where_string['email']);
+
+            $data=$this->mongo_db->where(array('email' => $email))->where('status',(string)$where_string['status'])->get('users');
+                
+            if(empty($data))
+            {
+              return $this->response(array('response' => 'ERR', '_items' => $data), REST_Controller::HTTP_OK);              
+            }
+            else
+            {                
+              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);            
             }
           }    
           elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
@@ -696,15 +727,20 @@ class Users extends REST_Controller
       $context->addConfig('bcrypt', array ('rounds' => 8)); 
       // Hash a password                
       $data['password']=$context->hash($patch_data['password']);
-    }  
-     
+    }     
     
     if(!empty($data))
     {
       date_default_timezone_set("Europe/Rome"); 
       $data['_updated']= new MongoDate();  
-      $this->mongo_db->where(array('_id' => new MongoId($user_id)))->set($data)->update('users');    
-      $this->response(array('_status' => 'OK'), REST_Controller::HTTP_OK);    
+      $this->mongo_db->where(array('_id' => new MongoId($user_id)))->set($data)->update('users');  
+      
+      // In caso di attivazione o riattivazione vado a eliminare le informazioni relative alla gdpr
+      if(isset($patch_data['status']) && $patch_data['status']==1)
+      {
+        $this->mongo_db->where(array('_id' => new MongoId($user_id)))->unset_field('gdpr_date_del')->update('users'); 
+      }
+      $this->response(array('_status' => 'OK'), REST_Controller::HTTP_OK);          
     }
     else $this->response(array('_status' => 'OK', 'msg' => 'no update'), REST_Controller::HTTP_OK);   
   }
