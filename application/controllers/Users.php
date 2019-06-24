@@ -307,6 +307,23 @@ class Users extends REST_Controller
               return $this->response(array('_items' => $data[0]['_id']), REST_Controller::HTTP_OK);               
             }          
           }
+
+          elseif(!empty($where_string) && isset($where_string['firstname']) && !empty($where_string['firstname'])) // Verifico Nome organizzazione
+          {
+              $firstname=urldecode($where_string['firstname']);
+              $datar=$this->mongo_db->where(array('firstname' => $firstname,'type'=>'org'))->get('users');
+              if(!empty($datar))
+              {
+                $error_status='ERR';
+                $error_issues=array('firstname' => 'is not unique for organizations');
+                $this->response(array('_status' => $error_status, '_issues' => $error_issues), REST_Controller::HTTP_OK);
+              }
+              else
+              {
+                $this->response(array('_status' => 'OK', '_issues' => null), REST_Controller::HTTP_OK);
+              }
+          
+          }
           elseif(!empty($where_string) && isset($where_string['source']) && !empty($where_string['source'])) // Verifico Source
           {
             $source=urldecode($where_string['source']);
@@ -750,7 +767,9 @@ class Users extends REST_Controller
     $post_data=$this->post();
     $error_status='';
     $error_issues=array();
-    
+
+
+
     // Verifico Email se esiste    
     
     if(isset($post_data['email']) && !empty($post_data['email']))
