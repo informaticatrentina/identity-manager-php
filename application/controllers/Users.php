@@ -235,15 +235,27 @@ class Users extends REST_Controller
           {
             $email=urldecode($where_string['email']);
 
-            $data=$this->mongo_db->where(array('email' => $email))->where('status',(string)$where_string['status'])->get('users');
-                
+                  
+            if($where_string['status']==1 || $where_string['status']=='enable') $status=1;
+            if($where_string['status']==0 || $where_string['status']=='disable') $status=0;
+       
+            $data=$this->mongo_db->where(array('email' => $email))->get('users');
+                       
             if(empty($data))
             {
               return $this->response(array('response' => 'ERR', '_items' => $data), REST_Controller::HTTP_OK);              
             }
             else
-            {                
-              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);            
+            {
+              $result=array();       
+              foreach ($data as $single_data)
+              {
+                if($single_data['status']==$status)
+                {
+                  $result[]=$single_data;
+                }                
+              }      
+              return $this->response(array('_items' => $result), REST_Controller::HTTP_OK);            
             }
           }    
           elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
