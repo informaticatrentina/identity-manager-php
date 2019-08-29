@@ -113,7 +113,7 @@ class Users extends REST_Controller
             }
             
             if(isset($where_string['$or'][0]['email']))
-            {          
+            {                        
               // Verifico controllo email iosostengo
               if(count($where_string['$or'])==1)
               {
@@ -235,32 +235,63 @@ class Users extends REST_Controller
           {
             $email=urldecode($where_string['email']);
 
-            $data=$this->mongo_db->where(array('email' => $email))->where('status',(string)$where_string['status'])->get('users');
-                
+                  
+            if($where_string['status']==1 || $where_string['status']=='enable') $status=1;
+            if($where_string['status']==0 || $where_string['status']=='disable') $status=0;
+       
+            $data=$this->mongo_db->where(array('email' => $email))->get('users');
+                       
             if(empty($data))
             {
               return $this->response(array('response' => 'ERR', '_items' => $data), REST_Controller::HTTP_OK);              
             }
             else
-            {                
-              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);            
+            {
+              $result=array();       
+              foreach ($data as $single_data)
+              {
+                if($single_data['status']==$status)
+                {
+                  $result[]=$single_data;
+                }                
+              }      
+              return $this->response(array('_items' => $result), REST_Controller::HTTP_OK);            
             }
           }    
           elseif(!empty($where_string) && isset($where_string['email']) && !empty($where_string['email']))              // Verifico Username
-          {            
+          {           
             $email=urldecode($where_string['email']);   
   
             $data=$this->mongo_db->where(array('email' => $email))->get('users');
-          
+                    
             if(empty($data))
             {
               return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK);            
             }
             else
-            {            
-              if(isset($data[0]['password'])) unset($data[0]['password']);
-              if(isset($data[0]['_id'])) $data[0]['_id']=(string)$data[0]['_id'];            
-              return $this->response(array('_items' => $data), REST_Controller::HTTP_OK);              
+            { 
+              // Verifico che non vi sia un account con status=1      
+              if(is_array($data))  
+              {
+                $active_user=false;
+                $active_key=null;
+                foreach($data as $key => $single)
+                {
+                  if(!isset($single['gdpr_date_del'])) { $active_user=TRUE; $active_key=$key; }                  
+                }
+              }    
+
+              if($active_user)
+              {
+                if(isset($data[$active_key]['password'])) unset($data[$active_key]['password']);
+                if(isset($data[$active_key]['_id'])) $data[$active_key]['_id']=(string)$data[$active_key]['_id'];  
+                $final_data[]=$data[$active_key];      
+                return $this->response(array('_items' => $final_data), REST_Controller::HTTP_OK);        
+              }
+              else
+              {
+                return $this->response(array('response' => 'ERR', '_items' => array()), REST_Controller::HTTP_OK); 
+              }                    
             }
           }
           elseif(!empty($where_string) && isset($where_string['_id']) && !empty($where_string['_id']))          // Verifico _id

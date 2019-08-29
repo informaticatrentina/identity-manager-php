@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 infotn-release-1.0.0.1
+=======
+infotn-release-1.0.1
+>>>>>>> develop
